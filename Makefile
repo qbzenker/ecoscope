@@ -39,7 +39,7 @@ tidy-all: tidy-pyupgrade  ## Tidy all files tidy-sh tidy-json
 	poetry run autoflake --expand-star-imports --remove-unused-variables --remove-all-unused-imports -r --in-place $${MODIFIED_FILES:-.}
 	poetry run isort --quiet $${MODIFIED_FILES:-. -rc}
 	poetry run docformatter --wrap-summaries 119 --wrap-descriptions 119 --in-place $${MODIFIED_FILES:-. -r}
-	poetry run black --quiet --target-version py310 --line-length 120 $${MODIFIED_FILES:-.}
+	poetry run black --quiet --target-version py311 --line-length 120 $${MODIFIED_FILES:-.}
 
 
 install:
