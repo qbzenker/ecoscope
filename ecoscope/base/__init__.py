@@ -6,11 +6,7 @@ from ecoscope.base._dataclasses import (
     TrajSegFilter,
 )
 from ecoscope.base.base import EcoDataFrame, Relocations, Trajectory
-from ecoscope.base.utils import (
-    cachedproperty,
-    create_meshgrid,
-    groupby_intervals,
-)
+from ecoscope.base.utils import cachedproperty, create_meshgrid, groupby_intervals
 
 __all__ = [
     "EcoDataFrame",

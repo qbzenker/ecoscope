@@ -19,7 +19,7 @@ class Region(collections.UserDict):
 
 
 class GeoFence(collections.UserDict):
-    """Represents Virtual Fence Boundary"""
+    """Represents Virtual Fence Boundary."""
 
     def __init__(
         self,
@@ -38,8 +38,8 @@ class GeoFence(collections.UserDict):
 
 @dataclasses.dataclass
 class GeoCrossingProfile:
-    geofences: typing.List[GeoFence]
-    regions: typing.List[Region]
+    geofences: list[GeoFence]
+    regions: list[Region]
 
     @property
     def geofence_df(self):
@@ -57,10 +57,9 @@ class GeoFenceCrossing:
         geocrossing_profile: GeoCrossingProfile,
         trajectory: ecoscope.base.Trajectory,
     ):
-        """
-        Analyze the trajectory of each subject in relation to set of virtual fences and regions to determine where/when
-        the polylines were crossed and what the containment of the individual was before and
-        after any geofence crossings.
+        """Analyze the trajectory of each subject in relation to set of virtual fences and regions to determine
+        where/when the polylines were crossed and what the containment of the individual was before and after any
+        geofence crossings.
 
         Parameters
         ----------
@@ -72,7 +71,6 @@ class GeoFenceCrossing:
         Returns
         -------
             ecoscope.base.EcoDataFrame
-
         """
         trajectory = trajectory.copy()
         trajectory["start_point"] = shapely.get_point(trajectory.geometry, 0)

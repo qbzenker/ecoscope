@@ -1,3 +1,1 @@
-"""
-External code included for simplified distribution.
-"""
+"""External code included for simplified distribution."""

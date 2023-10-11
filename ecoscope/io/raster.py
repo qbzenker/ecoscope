@@ -23,7 +23,7 @@ class RasterExtent:
         self.y_max = y_max
 
     def __repr__(self):
-        return "RasterExtent(xmin: {0}, xmax: {1}, ymin: {2}, ymax: {3})".format(
+        return "RasterExtent(xmin: {}, xmax: {}, ymin: {}, ymax: {})".format(
             self.x_min, self.x_max, self.y_min, self.y_max
         )
 
@@ -35,11 +35,8 @@ class RasterExtent:
 
 
 class RasterProfile(UserDict):
-    """
-    A class for holding raster properties
-    At present this class is only valid for non-rotated rasters with a north-up orientation and square sized pixels
-    defined by the E-W pixel size
-    """
+    """A class for holding raster properties At present this class is only valid for non-rotated rasters with a north-
+    up orientation and square sized pixels defined by the E-W pixel size."""
 
     def __init__(
         self,
@@ -147,12 +144,10 @@ class RasterPy:
 
 
 def reduce_region(gdf, raster_path_list, reduce_func):
-    """
-    A function to apply the reduce_func to the values of the pixels within each of the rasters for every
-    shape within the input geopandas dataframe 'geometry' column
-    :param gdf: geopandas dataframe. The geometry column will be used to mask the areas of the input
-    raster to be used
-    in the reduction
+    """A function to apply the reduce_func to the values of the pixels within each of the rasters for every shape
+    within the input geopandas dataframe 'geometry' column :param gdf: geopandas dataframe.
+
+    The geometry column will be used to mask the areas of the input raster to be used in the reduction
     :param raster_path_list: a list of raster files on disc to analyse
     :param reduce_func: a single-value function to apply to the values of the input raster
     :return: dataframe with a column of reduce values for each raster and a row for each region

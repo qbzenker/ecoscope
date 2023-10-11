@@ -10,8 +10,9 @@ from shapely.geometry import Point
 
 @dataclass
 class SpatialFeature:
-    """
-    A spatial geometry with an associated name and unique ID. Becomes a useful construct in several movdata calculations
+    """A spatial geometry with an associated name and unique ID.
+
+    Becomes a useful construct in several movdata calculations
     """
 
     name: str = ""
@@ -21,14 +22,13 @@ class SpatialFeature:
 
 @dataclass
 class ProximityProfile:
-    spatial_features: typing.List[SpatialFeature] = field(default=list)
+    spatial_features: list[SpatialFeature] = field(default=list)
 
 
 class Proximity:
     @classmethod
     def calculate_proximity(cls, proximity_profile, trajectory):
-        """
-        A function to analyze the trajectory of a subject in relation to a set of spatial features and regions to
+        """A function to analyze the trajectory of a subject in relation to a set of spatial features and regions to
         determine where/when the subject was proximal to the spatial feature.
 
         Parameters
@@ -40,7 +40,6 @@ class Proximity:
         Returns
         -------
         pd.DataFrame
-
         """
         proximity_events = []
 

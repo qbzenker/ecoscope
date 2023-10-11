@@ -29,8 +29,8 @@ colourPalettes = {
 
 
 def initialize_earthengine(key_dict):
-    """
-    This takes a JSON key as a dict.
+    """This takes a JSON key as a dict.
+
     :param key_dict:
     :return: a credentials object that can be used to initialize the earth engine library.
     """
@@ -62,9 +62,8 @@ def convert_millisecs_datetime(unix_time):
 
 
 def add_img_time(img):
-    """
-    A function to add the date range of the image as one of its properties and the start and end values as new bands
-    """
+    """A function to add the date range of the image as one of its properties and the start and end values as new
+    bands."""
 
     # unable to use the band rename() function here in Python whereas works in JS playground
     img = img.addBands(img.metadata("system:time_start"))
@@ -97,9 +96,9 @@ def label_gdf_with_img(gdf=None, img=None, region_reducer=None, scale=500.0):
 def _match_gdf_to_img_coll_ids(
     gdf, time_col="", img_coll=None, output_col_name=None, stack_limit_before=1, stack_limit_after=1
 ):
-    """
-    A function that will add a column to a gdf (output_col_name) that contains
-    the stack_limit_before -> stack_limit_after temporally closest image IDs from an image collection.
+    """A function that will add a column to a gdf (output_col_name) that contains the stack_limit_before ->
+    stack_limit_after temporally closest image IDs from an image collection.
+
     :param gdf:
     :param time_col:
     :param img_coll:
@@ -134,9 +133,7 @@ def _match_gdf_to_img_coll_ids(
             upper = int(nearest_index + stack_limit_after)
             if upper > len(img_data.index) - 1:
                 upper = len(img_data.index)
-            img_ids = img_data.iloc[
-                lower:upper,
-            ]["img_id"].to_list()
+            img_ids = img_data.iloc[lower:upper,]["img_id"].to_list()
             return img_ids
 
         logger.info("Matching Features to Image IDs")
@@ -160,7 +157,6 @@ def label_gdf_with_temporal_image_collection_by_feature(
     region_reducer=None,
     scale=500.0,
 ):
-
     # Match the features to the necessary image collection images
     _match_gdf_to_img_coll_ids(
         gdf=gdf,
@@ -271,13 +267,11 @@ def chunk_gdf(
     df_chunk_size=25000,
     max_workers=1,
 ):
-    """
-    A function that will process the input gdf in chunks and apply the input label_func function over the chunks.
+    """A function that will process the input gdf in chunks and apply the input label_func function over the chunks.
 
-    :param gdf:
-        a geopandas dataframe. The 'geometry' column can be any type pf geometry (point/line/polygon). The gdf needs to
-        have a column with the name of the image_collection and the column values are lists of the individual image IDs
-        that need to be associated with each feature. This step will typically be run with the
+    :param gdf: a geopandas dataframe. The 'geometry' column can be any type pf geometry (point/line/polygon). The gdf
+        needs to have a column with the name of the image_collection and the column values are lists of the individual
+        image IDs that need to be associated with each feature. This step will typically be run with the
         match_img_coll_ids_to_gdf() function beforehand.
     :param label_func: a function to run on the EE cloud that has the signature (feat, kwargs)
     :param label_func_kwargs: a dictionary of parameters to provide to the label_func
@@ -304,8 +298,8 @@ def calculate_anomaly(
     end="2022-01-01",
     scale=5000.0,
 ):
-    """
-    Compute anomalies by subtracting the historical_start mean from each image in a collection of start->end images.
+    """Compute anomalies by subtracting the historical_start mean from each image in a collection of start->end images.
+
     :param gdf: the input geodataframe
     :param img_coll: the input EE image collection
     :param historical_start: start time for calculating the mean reference

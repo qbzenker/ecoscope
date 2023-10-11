@@ -15,8 +15,7 @@ import ecoscope
 
 
 class Ecograph:
-    """
-    A class that analyzes movement tracking data using Network Theory.
+    """A class that analyzes movement tracking data using Network Theory.
 
     Parameters
     ----------
@@ -81,8 +80,7 @@ class Ecograph:
         self.trajectory.groupby("groupby_col").progress_apply(compute)
 
     def to_csv(self, output_path):
-        """
-        Saves the features of all nodes in a CSV file
+        """Saves the features of all nodes in a CSV file.
 
         Parameters
         ----------
@@ -101,8 +99,7 @@ class Ecograph:
         (pd.DataFrame.from_dict(df)).to_csv(output_path, index=False)
 
     def to_geotiff(self, feature, output_path, individual="all", interpolation=None, transform=None):
-        """
-        Saves a specific node feature as a GeoTIFF
+        """Saves a specific node feature as a GeoTIFF.
 
         Parameters
         ----------
@@ -383,8 +380,7 @@ class FeatureNameError(Exception):
 
 
 def get_feature_gdf(input_path):
-    """
-    Convert a GeoTIFF feature map into a GeoDataFrame
+    """Convert a GeoTIFF feature map into a GeoDataFrame.
 
     Parameters
     ----------

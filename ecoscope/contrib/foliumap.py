@@ -1,30 +1,25 @@
-"""
-MIT License
+"""MIT License.
 
 Copyright (c) 2021, Qiusheng Wu
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 __version__ = "be6ccdfa5450b775724547b6ef50f213c820be85"
 
 import os
+
 import folium
 import folium.plugins as plugins
 
@@ -51,7 +46,6 @@ class Map(folium.Map):
     """
 
     def __init__(self, **kwargs):
-
         # Default map center location and zoom level
         latlon = [20, 0]
         zoom = 2
@@ -84,11 +78,7 @@ class Map(folium.Map):
         if "height" in kwargs and isinstance(kwargs["height"], str):
             kwargs["height"] = float(kwargs["height"].replace("px", ""))
 
-        if (
-            "width" in kwargs
-            and isinstance(kwargs["width"], str)
-            and ("%" not in kwargs["width"])
-        ):
+        if "width" in kwargs and isinstance(kwargs["width"], str) and ("%" not in kwargs["width"]):
             kwargs["width"] = float(kwargs["width"].replace("px", ""))
 
         height = None
@@ -188,7 +178,10 @@ class Map(folium.Map):
             folium.LayerControl().add_to(self)
 
     def _repr_mimebundle_(self, **kwargs):
-        """Adds Layer control to the map. Reference: https://ipython.readthedocs.io/en/stable/config/integrating.html#MyObject._repr_mimebundle_"""
+        """Adds Layer control to the map.
+
+        Reference: https://ipython.readthedocs.io/en/stable/config/integrating.html#MyObject._repr_mimebundle_
+        """
         if self.options["layersControl"]:
             self.add_layer_control()
 
@@ -250,17 +243,9 @@ class Map(folium.Map):
             elif basemap in basemaps:
                 basemaps[basemap].add_to(self)
             else:
-                print(
-                    "Basemap can only be one of the following: {}".format(
-                        ", ".join(basemaps.keys())
-                    )
-                )
+                print("Basemap can only be one of the following: {}".format(", ".join(basemaps.keys())))
         except Exception:
-            raise Exception(
-                "Basemap can only be one of the following: {}".format(
-                    ", ".join(basemaps.keys())
-                )
-            )
+            raise Exception("Basemap can only be one of the following: {}".format(", ".join(basemaps.keys())))
 
     def add_wms_layer(
         self,
@@ -277,7 +262,6 @@ class Map(folium.Map):
         styles="",
         **kwargs,
     ):
-
         """Add a WMS layer to the map.
 
         Args:
@@ -462,9 +446,9 @@ class Map(folium.Map):
         lon="lon",
         **kwargs,
     ):
-        """Generate an ipyleaflet/folium TileLayer from a netCDF file.
-            If you are using this function in JupyterHub on a remote server (e.g., Binder, Microsoft Planetary Computer),
-            try adding to following two lines to the beginning of the notebook if the raster does not render properly.
+        """Generate an ipyleaflet/folium TileLayer from a netCDF file. If you are using this function in JupyterHub on
+        a remote server (e.g., Binder, Microsoft Planetary Computer), try adding to following two lines to the
+        beginning of the notebook if the raster does not render properly.
 
             import os
             os.environ['LOCALTILESERVER_CLIENT_PREFIX'] = f'{os.environ['JUPYTERHUB_SERVICE_PREFIX'].lstrip('/')}/proxy/{{port}}'
@@ -484,9 +468,7 @@ class Map(folium.Map):
             lon (str, optional): Name of the longitude variable. Defaults to 'lon'.
         """
 
-        tif, vars = netcdf_to_tif(
-            filename, shift_lon=shift_lon, lat=lat, lon=lon, return_vars=True
-        )
+        tif, vars = netcdf_to_tif(filename, shift_lon=shift_lon, lat=lat, lon=lon, return_vars=True)
 
         if variables is None:
             if len(vars) >= 3:
@@ -537,7 +519,6 @@ class Map(folium.Map):
         import pandas as pd
 
         try:
-
             if isinstance(data, str):
                 df = pd.read_csv(data)
                 data = df[[latitude, longitude, value]].values.tolist()
@@ -580,12 +561,9 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
 
-        gdf = osm_gdf_from_geocode(
-            query, which_result=which_result, by_osmid=by_osmid, buffer_dist=buffer_dist
-        )
+        gdf = osm_gdf_from_geocode(query, which_result=which_result, by_osmid=by_osmid, buffer_dist=buffer_dist)
         geojson = gdf.__geo_interface__
 
         self.add_geojson(
@@ -623,7 +601,6 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         gdf = osm_gdf_from_address(address, tags, dist)
         geojson = gdf.__geo_interface__
@@ -665,7 +642,6 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         gdf = osm_gdf_from_place(query, tags, which_result, buffer_dist)
         geojson = gdf.__geo_interface__
@@ -705,7 +681,6 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         gdf = osm_gdf_from_point(center_point, tags, dist)
         geojson = gdf.__geo_interface__
@@ -743,7 +718,6 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         gdf = osm_gdf_from_polygon(polygon, tags)
         geojson = gdf.__geo_interface__
@@ -775,7 +749,6 @@ class Map(folium.Map):
     ):
         """Adds OSM entities within a N, S, E, W bounding box to the map.
 
-
         Args:
             north (float): Northern latitude of bounding box.
             south (float): Southern latitude of bounding box.
@@ -788,7 +761,6 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         gdf = osm_gdf_from_bbox(north, south, east, west, tags)
         geojson = gdf.__geo_interface__
@@ -824,7 +796,6 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         pass  # folium can't get map bounds. See https://github.com/python-visualization/folium/issues/1118
         # bounds = self.get_bounds()
@@ -920,9 +891,7 @@ class Map(folium.Map):
             opacity (float, optional): The opacity of the layer. Defaults to 1.
             shown (bool, optional): A flag indicating whether the layer should be on by default. Defaults to True.
         """
-        tile_url = stac_tile(
-            url, collection, item, assets, bands, titiler_endpoint, **kwargs
-        )
+        tile_url = stac_tile(url, collection, item, assets, bands, titiler_endpoint, **kwargs)
         bounds = stac_bounds(url, collection, item, titiler_endpoint)
         self.add_tile_layer(
             url=tile_url,
@@ -985,9 +954,9 @@ class Map(folium.Map):
             opacity (float, optional): The opacity of the legend. Defaults to 1.0.
 
         """
-        from branca.element import Template, MacroElement
-
         import os
+
+        from branca.element import MacroElement, Template
 
         legend_template = os.path.join(os.path.dirname(__file__), "legend.txt")
 
@@ -1024,9 +993,7 @@ class Map(folium.Map):
         if builtin_legend is not None:
             if builtin_legend not in allowed_builtin_legends:
                 raise ValueError(
-                    "The builtin legend must be one of the following: {}".format(
-                        ", ".join(allowed_builtin_legends)
-                    )
+                    "The builtin legend must be one of the following: {}".format(", ".join(allowed_builtin_legends))
                 )
             else:
                 legend_dict = builtin_legends[builtin_legend]
@@ -1117,9 +1084,7 @@ class Map(folium.Map):
         if all(len(color) == 6 for color in colors):
             colors = ["#" + color for color in colors]
 
-        colormap = LinearColormap(
-            colors=colors, index=index, vmin=vmin, vmax=vmax, caption=caption
-        )
+        colormap = LinearColormap(colors=colors, index=index, vmin=vmin, vmax=vmax, caption=caption)
 
         if categorical:
             if step is not None:
@@ -1153,9 +1118,7 @@ class Map(folium.Map):
             if len(files) > 0:
                 in_shp = files[0]
             else:
-                raise FileNotFoundError(
-                    "The downloaded zip file does not contain any shapefile in the root directory."
-                )
+                raise FileNotFoundError("The downloaded zip file does not contain any shapefile in the root directory.")
         else:
             in_shp = os.path.abspath(in_shp)
             if not os.path.exists(in_shp):
@@ -1185,21 +1148,18 @@ class Map(folium.Map):
             FileNotFoundError: The provided GeoJSON file could not be found.
         """
         import json
-        import requests
         import random
 
+        import requests
+
         try:
-
             if isinstance(in_geojson, str):
-
                 if in_geojson.startswith("http"):
                     data = requests.get(in_geojson).json()
                 else:
                     in_geojson = os.path.abspath(in_geojson)
                     if not os.path.exists(in_geojson):
-                        raise FileNotFoundError(
-                            "The provided GeoJSON file could not be found."
-                        )
+                        raise FileNotFoundError("The provided GeoJSON file could not be found.")
 
                     with open(in_geojson, encoding=encoding) as f:
                         data = json.load(f)
@@ -1262,9 +1222,7 @@ class Map(folium.Map):
             elif info_mode == "on_click":
                 popup = folium.GeoJsonPopup(fields=props)
 
-        geojson = folium.GeoJson(
-            data=data, name=layer_name, tooltip=tooltip, popup=popup, **kwargs
-        )
+        geojson = folium.GeoJson(data=data, name=layer_name, tooltip=tooltip, popup=popup, **kwargs)
         geojson.add_to(self)
 
     def add_gdf(
@@ -1282,7 +1240,6 @@ class Map(folium.Map):
             layer_name (str, optional): The layer name to be used. Defaults to "Untitled".
             zoom_to_layer (bool, optional): Whether to zoom to the layer.
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
 
         data = gdf_to_geojson(gdf, epsg="4326")
@@ -1316,7 +1273,6 @@ class Map(folium.Map):
             layer_name (str, optional): The layer name to be used. Defaults to "Untitled".
             zoom_to_layer (bool, optional): Whether to zoom to the layer.
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         if "fill_colors" in kwargs:
             kwargs.pop("fill_colors")
@@ -1383,7 +1339,6 @@ class Map(folium.Map):
             mask (dict | GeoDataFrame or GeoSeries | shapely Geometry, optional): Filter for features that intersect with the given dict-like geojson geometry, GeoSeries, GeoDataFrame or shapely geometry. CRS mis-matches are resolved if given a GeoSeries or GeoDataFrame. Cannot be used with bbox. Defaults to None.
             rows (int or slice, optional): Load in specific rows by passing an integer (first n rows) or a slice() object.. Defaults to None.
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
-
         """
         if not filename.startswith("http"):
             filename = os.path.abspath(filename)
@@ -1405,9 +1360,7 @@ class Map(folium.Map):
 
             self.add_geojson(geojson, layer_name, info_mode=info_mode, **kwargs)
 
-    def add_planet_by_month(
-        self, year=2016, month=1, name=None, api_key=None, token_name="PLANET_API_KEY"
-    ):
+    def add_planet_by_month(self, year=2016, month=1, name=None, api_key=None, token_name="PLANET_API_KEY"):
         """Adds a Planet global mosaic by month to the map. To get a Planet API key, see https://developers.planet.com/quickstart/apis
 
         Args:
@@ -1417,14 +1370,10 @@ class Map(folium.Map):
             api_key (str, optional): The Planet API key. Defaults to None.
             token_name (str, optional): The environment variable name of the API key. Defaults to "PLANET_API_KEY".
         """
-        layer = planet_tile_by_month(
-            year, month, name, api_key, token_name, tile_format="folium"
-        )
+        layer = planet_tile_by_month(year, month, name, api_key, token_name, tile_format="folium")
         layer.add_to(self)
 
-    def add_planet_by_quarter(
-        self, year=2016, quarter=1, name=None, api_key=None, token_name="PLANET_API_KEY"
-    ):
+    def add_planet_by_quarter(self, year=2016, quarter=1, name=None, api_key=None, token_name="PLANET_API_KEY"):
         """Adds a Planet global mosaic by quarter to the map. To get a Planet API key, see https://developers.planet.com/quickstart/apis
 
         Args:
@@ -1434,9 +1383,7 @@ class Map(folium.Map):
             api_key (str, optional): The Planet API key. Defaults to None.
             token_name (str, optional): The environment variable name of the API key. Defaults to "PLANET_API_KEY".
         """
-        layer = planet_tile_by_quarter(
-            year, quarter, name, api_key, token_name, tile_format="folium"
-        )
+        layer = planet_tile_by_quarter(year, quarter, name, api_key, token_name, tile_format="folium")
         layer.add_to(self)
 
     def publish(
@@ -1451,7 +1398,7 @@ class Map(folium.Map):
         token=None,
         **kwargs,
     ):
-        """Publish the map to datapane.com
+        """Publish the map to datapane.com.
 
         Args:
             name (str, optional): The document name - can include spaces, caps, symbols, etc., e.g. "Profit & Loss 2020". Defaults to "Folium Map".
@@ -1463,8 +1410,8 @@ class Map(folium.Map):
             formatting (ReportFormatting, optional): Set the basic styling for your report.
             token (str, optional): The token to use to datapane to publish the map. See https://docs.datapane.com/tut-getting-started. Defaults to None.
         """
-        import webbrowser
         import warnings
+        import webbrowser
 
         warnings.filterwarnings("ignore")
         try:
@@ -1487,7 +1434,6 @@ class Map(folium.Map):
             dp.login(token)
 
         try:
-
             dp.Report(dp.Plot(self)).upload(
                 name=name,
                 description=description,
@@ -1545,7 +1491,8 @@ class Map(folium.Map):
         bidirectional=False,
         **kwargs,
     ):
-        """Renders `folium.Figure` or `folium.Map` in a Streamlit app. This method is a static Streamlit Component, meaning, no information is passed back from Leaflet on browser interaction.
+        """Renders `folium.Figure` or `folium.Map` in a Streamlit app. This method is a static Streamlit Component,
+        meaning, no information is passed back from Leaflet on browser interaction.
 
         Args:
             width (int, optional): Width of the map. Defaults to 1000.
@@ -1575,7 +1522,6 @@ class Map(folium.Map):
                 output = st_folium(self, width=width, height=height)
                 return output
             else:
-
                 if responsive:
                     make_map_responsive = """
                     <style>
@@ -1583,9 +1529,7 @@ class Map(folium.Map):
                     </style>
                     """
                     st.markdown(make_map_responsive, unsafe_allow_html=True)
-                return components.html(
-                    self.to_html(), width=width, height=height, scrolling=scrolling
-                )
+                return components.html(self.to_html(), width=width, height=height, scrolling=scrolling)
 
         except Exception as e:
             raise Exception(e)
@@ -1637,7 +1581,6 @@ class Map(folium.Map):
             import streamlit as st
 
             if "map_bounds" in st.session_state:
-
                 bounds = st.session_state["map_bounds"]
 
                 self.fit_bounds(bounds)
@@ -1708,12 +1651,10 @@ class Map(folium.Map):
     def static_map(self, width=950, height=600, out_file=None, **kwargs):
         """Display a folium static map in a Jupyter Notebook.
 
-        Args
-            m (folium.Map): A folium map.
-            width (int, optional): Width of the map. Defaults to 950.
-            height (int, optional): Height of the map. Defaults to 600.
-            read_only (bool, optional): Whether to hide the side panel to disable map customization. Defaults to False.
-            out_file (str, optional): Output html file path. Defaults to None.
+        Args     m (folium.Map): A folium map.     width (int, optional): Width of the map. Defaults to 950.     height
+        (int, optional): Height of the map. Defaults to 600.     read_only (bool, optional): Whether to hide the side
+        panel to disable map customization. Defaults to False.     out_file (str, optional): Output html file path.
+        Defaults to None.
         """
         if isinstance(self, folium.Map):
             if out_file is None:
@@ -1741,15 +1682,11 @@ class Map(folium.Map):
                 census_dict = get_census_dict()
 
             if wms not in census_dict.keys():
-                raise ValueError(
-                    f"The provided WMS is invalid. It must be one of {census_dict.keys()}"
-                )
+                raise ValueError(f"The provided WMS is invalid. It must be one of {census_dict.keys()}")
 
             layers = census_dict[wms]["layers"]
             if layer not in layers:
-                raise ValueError(
-                    f"The layer name is not valid. It must be one of {layers}"
-                )
+                raise ValueError(f"The layer name is not valid. It must be one of {layers}")
 
             url = census_dict[wms]["url"]
             if "name" not in kwargs:
@@ -1795,13 +1732,9 @@ class Map(folium.Map):
                 attribution = " "
             self.add_tile_layer(url=url, name=name, attribution=attribution)
         else:
-            raise ValueError(
-                f"The provider {provider} is not valid. It must start with xyz or qms."
-            )
+            raise ValueError(f"The provider {provider} is not valid. It must start with xyz or qms.")
 
-    def add_marker(
-        self, location, popup=None, tooltip=None, icon=None, draggable=False, **kwargs
-    ):
+    def add_marker(self, location, popup=None, tooltip=None, icon=None, draggable=False, **kwargs):
         """Adds a marker to the map. More info about marker options at https://python-visualization.github.io/folium/modules.html#folium.map.Marker.
 
         Args:
@@ -1919,9 +1852,7 @@ class Map(folium.Map):
         col_names = df.columns.values.tolist()
 
         if color_column is not None and color_column not in col_names:
-            raise ValueError(
-                f"The color column {color_column} does not exist in the dataframe."
-            )
+            raise ValueError(f"The color column {color_column} does not exist in the dataframe.")
 
         if color_column is not None:
             items = list(set(df[color_column]))
@@ -1942,7 +1873,6 @@ class Map(folium.Map):
                 )
 
         if items is not None:
-
             if len(icon_colors) == 1:
                 icon_colors = icon_colors * len(items)
             elif len(items) != len(icon_colors):
@@ -1994,9 +1924,7 @@ class Map(folium.Map):
 
         if items is not None and add_legend:
             marker_colors = [c for c in marker_colors]
-            self.add_legend(
-                title=color_column.title(), colors=marker_colors, labels=items
-            )
+            self.add_legend(title=color_column.title(), colors=marker_colors, labels=items)
 
     def add_circle_markers_from_xy(
         self,
@@ -2021,7 +1949,6 @@ class Map(folium.Map):
             tooltip (list, optional): A list of column names to be used as the tooltip. Defaults to None.
             min_width (int, optional): The minimum width of the popup. Defaults to 100.
             max_width (int, optional): The maximum width of the popup. Defaults to 200.
-
         """
         import pandas as pd
 
@@ -2112,6 +2039,7 @@ class Map(folium.Map):
 
         """
         import warnings
+
         import pandas as pd
         from folium.features import DivIcon
 
@@ -2193,9 +2121,7 @@ class Map(folium.Map):
                         attr=" ",
                         overlay=True,
                     )
-            elif isinstance(left_layer, folium.raster_layers.TileLayer) or isinstance(
-                left_layer, folium.WmsTileLayer
-            ):
+            elif isinstance(left_layer, folium.raster_layers.TileLayer) or isinstance(left_layer, folium.WmsTileLayer):
                 pass
             else:
                 raise ValueError(
@@ -2220,18 +2146,14 @@ class Map(folium.Map):
                         attr=" ",
                         overlay=True,
                     )
-            elif isinstance(right_layer, folium.raster_layers.TileLayer) or isinstance(
-                left_layer, folium.WmsTileLayer
-            ):
+            elif isinstance(right_layer, folium.raster_layers.TileLayer) or isinstance(left_layer, folium.WmsTileLayer):
                 pass
             else:
                 raise ValueError(
                     f"right_layer must be one of the following: {', '.join(basemaps.keys())} or a string url to a tif file."
                 )
 
-            control = SplitControl(
-                layer_left=left_layer, layer_right=right_layer, name="Split Control"
-            )
+            control = SplitControl(layer_left=left_layer, layer_right=right_layer, name="Split Control")
             left_layer.add_to(self)
             right_layer.add_to(self)
             control.add_to(self)
@@ -2395,9 +2317,7 @@ class Map(folium.Map):
             "The folium plotting backend does not support this function. Use the ipyleaflet plotting backend instead."
         )
 
-    def add_point_layer(
-        self, filename, popup=None, layer_name="Marker Cluster", **kwargs
-    ):
+    def add_point_layer(self, filename, popup=None, layer_name="Marker Cluster", **kwargs):
         """Adds a point layer to the map with a popup attribute."""
         raise NotImplementedError(
             "The folium plotting backend does not support this function. Use the ipyleaflet plotting backend instead."
@@ -2521,9 +2441,7 @@ class Map(folium.Map):
             "The folium plotting backend does not support this function. Use the ipyleaflet plotting backend instead."
         )
 
-    def add_search_control(
-        self, url, marker=None, zoom=None, position="topleft", **kwargs
-    ):
+    def add_search_control(self, url, marker=None, zoom=None, position="topleft", **kwargs):
         """Adds a search control to the map."""
         print("The folium plotting backend does not support this function.")
 
@@ -2556,7 +2474,6 @@ class Map(folium.Map):
         display_options={},
         name="Velocity",
     ):
-
         print(f"The folium plotting backend does not support this function.")
 
 
@@ -2596,23 +2513,17 @@ class SplitControl(Layer):
         """
     )
 
-    def __init__(
-        self, layer_left, layer_right, name=None, overlay=True, control=True, show=True
-    ):
-        super(SplitControl, self).__init__(
-            name=name, overlay=overlay, control=control, show=show
-        )
+    def __init__(self, layer_left, layer_right, name=None, overlay=True, control=True, show=True):
+        super().__init__(name=name, overlay=overlay, control=control, show=show)
         self._name = "SplitControl"
         self.layer_left = layer_left
         self.layer_right = layer_right
 
     def render(self, **kwargs):
-        super(SplitControl, self).render()
+        super().render()
 
         figure = self.get_root()
-        assert isinstance(figure, Figure), (
-            "You cannot render this Element " "if it is not in a Figure."
-        )
+        assert isinstance(figure, Figure), "You cannot render this Element " "if it is not in a Figure."
 
         figure.header.add_child(
             JavascriptLink(
@@ -2653,7 +2564,7 @@ def delete_dp_reports():
             print(item["name"])
             report = dp.Report.get(item["name"])
             url = report.blocks[0]["url"]
-            print("Deleting {}...".format(url))
+            print(f"Deleting {url}...")
             dp.Report.delete(dp.Report.by_id(url))
     except Exception as e:
         raise Exception(e)
@@ -2689,7 +2600,8 @@ def split_map(
 
 
 def st_map_center(lat, lon):
-    """Returns the map center coordinates for a given latitude and longitude. If the system variable 'map_center' exists, it is used. Otherwise, the default is returned.
+    """Returns the map center coordinates for a given latitude and longitude. If the system variable 'map_center'
+    exists, it is used. Otherwise, the default is returned.
 
     Args:
         lat (float): Latitude.

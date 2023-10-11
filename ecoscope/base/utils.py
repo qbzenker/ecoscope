@@ -74,10 +74,9 @@ def create_meshgrid(
 
 
 class cachedproperty:  # noqa
-    """
-    The ``cachedproperty`` is used similar to :class:`property`, except
-    that the wrapped method is only called once. This is commonly used
-    to implement lazy attributes.
+    """The ``cachedproperty`` is used similar to :class:`property`, except that the wrapped method is only called once.
+
+    This is commonly used to implement lazy attributes.
     """
 
     def __init__(self, func):
@@ -172,9 +171,7 @@ def create_interval_index(start, intervals, freq, overlap=pd.Timedelta(0), close
 
 
 class ModisBegin(pd._libs.tslibs.offsets.SingleConstructorOffset):
-    """
-    Primitive DateOffset to support MODIS period start times.
-    """
+    """Primitive DateOffset to support MODIS period start times."""
 
     def apply(self, other: pd.Timestamp) -> pd.Timestamp:
         assert other.tz is not None, "Timestamp must be timezone-aware"

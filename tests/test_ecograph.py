@@ -8,11 +8,7 @@ import pytest
 import sklearn.preprocessing
 
 import ecoscope
-from ecoscope.analysis.ecograph import (
-    FeatureNameError,
-    IndividualNameError,
-    InterpolationError,
-)
+from ecoscope.analysis.ecograph import FeatureNameError, IndividualNameError, InterpolationError
 
 
 def test_ecograph(movbank_relocations):

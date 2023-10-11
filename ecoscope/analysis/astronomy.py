@@ -8,8 +8,7 @@ import pyproj
 
 
 def to_EarthLocation(geometry):
-    """
-    Location on Earth, initialized from geocentric coordinates.
+    """Location on Earth, initialized from geocentric coordinates.
 
     Parameters
     ----------

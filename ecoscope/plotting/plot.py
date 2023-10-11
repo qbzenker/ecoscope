@@ -454,9 +454,7 @@ def plot_seasonal_dist(ndvi_vals, cuts, bandwidth=0.05, output_file=None):
     )
 
     [
-        fig.add_vline(
-            x=i, line_width=3, line_dash="dash", line_color="red", annotation_text=" Cut Val: {:.2f}".format(i)
-        )
+        fig.add_vline(x=i, line_width=3, line_dash="dash", line_color="red", annotation_text=f" Cut Val: {i:.2f}")
         for i in cuts[1:-1]
     ]
     fig.update_layout(xaxis_title="NDVI")

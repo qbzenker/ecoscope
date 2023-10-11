@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 from ecoscope.mapping.map import EcoMap
 
 sys.path.append("../ecoscope")

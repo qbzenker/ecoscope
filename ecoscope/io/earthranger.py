@@ -1,6 +1,5 @@
 import datetime
 import json
-import typing
 
 import geopandas as gpd
 import pandas as pd
@@ -219,9 +218,9 @@ class EarthRangerIO(ERClient):
         created_after=None,
         **addl_kwargs,
     ):
-        """
-        Return observations matching queries. If `subject_id`, `source_id`, or `subjectsource_id` is specified, the
+        """Return observations matching queries. If `subject_id`, `source_id`, or `subjectsource_id` is specified, the
         index is set to the provided value.
+
         Parameters
         ----------
         subject_ids: filter to a single subject
@@ -296,8 +295,8 @@ class EarthRangerIO(ERClient):
         return EarthRangerIO._to_gdf(observations)
 
     def get_source_observations(self, source_ids, include_source_details=False, relocations=True, **kwargs):
-        """
-        Get observations for each listed source and create a `Relocations` object.
+        """Get observations for each listed source and create a `Relocations` object.
+
         Parameters
         ----------
         source_ids : str or list[str]
@@ -346,8 +345,8 @@ class EarthRangerIO(ERClient):
         relocations=True,
         **kwargs,
     ):
-        """
-        Get observations for each listed subject and create a `Relocations` object.
+        """Get observations for each listed subject and create a `Relocations` object.
+
         Parameters
         ----------
         subject_ids : str or list[str]
@@ -414,8 +413,8 @@ class EarthRangerIO(ERClient):
         relocations=True,
         **kwargs,
     ):
-        """
-        Get observations for each listed subjectsource and create a `Relocations` object.
+        """Get observations for each listed subjectsource and create a `Relocations` object.
+
         Parameters
         ----------
         subjectsource_ids : str or list[str]
@@ -653,8 +652,7 @@ class EarthRangerIO(ERClient):
         return df
 
     def get_patrol_segments_from_patrol_id(self, patrol_id, **addl_kwargs):
-        """
-        Download patrols for a given `patrol id`.
+        """Download patrols for a given `patrol id`.
 
         Parameters
         ----------
@@ -675,7 +673,7 @@ class EarthRangerIO(ERClient):
         df["patrol_segments"][0].pop("updates")
         df.pop("updates")
 
-        return pd.DataFrame(dict([(k, pd.Series(v)) for k, v in df.items()]))
+        return pd.DataFrame({k: pd.Series(v) for k, v in df.items()})
 
     def get_patrol_segments(self):
         object = "activity/patrols/segments/"
@@ -684,8 +682,8 @@ class EarthRangerIO(ERClient):
         )
 
     def get_patrol_observations(self, patrols_df, include_patrol_details=False, **kwargs):
-        """
-        Download observations for provided `patrols_df`.
+        """Download observations for provided `patrols_df`.
+
         Parameters
         ----------
         patrols_df : pd.DataFrame
@@ -786,7 +784,7 @@ class EarthRangerIO(ERClient):
         manufacturer_id: str,
         model_name: str,
         provider: str = "default",
-        additional: typing.Dict = {},
+        additional: dict = {},
         **kwargs,
     ) -> pd.DataFrame:
         """
@@ -854,7 +852,7 @@ class EarthRangerIO(ERClient):
         source_id: str,
         lower_bound_assigned_range: datetime.datetime,
         upper_bound_assigned_range: datetime.datetime,
-        additional: typing.Dict = None,
+        additional: dict = None,
     ) -> pd.DataFrame:
         """
         Parameters
@@ -925,7 +923,7 @@ class EarthRangerIO(ERClient):
 
     def post_event(
         self,
-        events: typing.Union[gpd.GeoDataFrame, pd.DataFrame, typing.Dict, typing.List[typing.Dict]],
+        events: gpd.GeoDataFrame | pd.DataFrame | dict | list[dict],
     ) -> pd.DataFrame:
         """
         Parameters
@@ -970,8 +968,8 @@ class EarthRangerIO(ERClient):
         scheduled_end: str = None,
         start_time: str = None,
         end_time: str = None,
-        start_location: typing.Tuple[float, float] = None,
-        end_location: typing.Tuple[float, float] = None,
+        start_location: tuple[float, float] = None,
+        end_location: tuple[float, float] = None,
         **kwargs,
     ) -> pd.DataFrame:
         """
@@ -1060,7 +1058,7 @@ class EarthRangerIO(ERClient):
     def patch_event(
         self,
         event_id: str,
-        events: typing.Union[gpd.GeoDataFrame, pd.DataFrame, typing.Dict, typing.List[typing.Dict]],
+        events: gpd.GeoDataFrame | pd.DataFrame | dict | list[dict],
     ) -> pd.DataFrame:
         """
         Parameters

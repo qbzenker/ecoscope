@@ -1,5 +1,4 @@
 import datetime
-import typing
 from dataclasses import dataclass
 
 import ecoscope
@@ -22,9 +21,7 @@ class ImmobilityProfile:
 
 class Immobility:
     @classmethod
-    def calculate_immobility(
-        cls, immobility_profile: ImmobilityProfile, relocs: ecoscope.base.Relocations
-    ) -> typing.Dict:
+    def calculate_immobility(cls, immobility_profile: ImmobilityProfile, relocs: ecoscope.base.Relocations) -> dict:
         """
         Function to search for immobility within a movement trajectory. Assumes we start with a filtered
         trajectory spanning some period of time. The algorithm will work backwards through the trajectory's

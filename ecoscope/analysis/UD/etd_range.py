@@ -1,6 +1,5 @@
 import math
 import os
-import typing
 from dataclasses import dataclass
 
 import numba as nb
@@ -78,18 +77,17 @@ class Weibull3Parameter(WeibullPDF):
 
 def calculate_etd_range(
     trajectory_gdf: Trajectory,
-    output_path: typing.Union[str, bytes, os.PathLike],
+    output_path: str | bytes | os.PathLike,
     max_speed_kmhr: float = 0.0,
     max_speed_percentage: float = 0.9999,
-    raster_profile: raster.RasterProfile = None,
+    raster_profile: raster.RasterProfile | None = None,
     expansion_factor: float = 1.3,
-    weibull_pdf: typing.Union[Weibull2Parameter, Weibull3Parameter] = Weibull2Parameter(),
+    weibull_pdf: Weibull2Parameter | Weibull3Parameter = Weibull2Parameter(),
 ) -> None:
-    """
-    The ETDRange class provides a trajectory-based, nonparametric approach to estimate the utilization distribution (UD)
-    of an animal, using model parameters derived directly from the movement behaviour of the species.
-    The model builds on the theory of "time-geography" whereby elliptical constrain- ing regions are established
-    between temporally adjacent recorded locations.
+    """The ETDRange class provides a trajectory-based, nonparametric approach to estimate the utilization distribution
+    (UD) of an animal, using model parameters derived directly from the movement behaviour of the species. The model
+    builds on the theory of "time-geography" whereby elliptical constrain- ing regions are established between
+    temporally adjacent recorded locations.
 
     Parameters
     ----------

@@ -1,5 +1,3 @@
-import typing
-
 import geopandas as gpd
 import mapclassify
 import pandas as pd
@@ -15,8 +13,8 @@ class SpeedDataFrame(ecoscope.base.EcoDataFrame):
         trajectory: ecoscope.base.Trajectory,
         classification_method: str = "equal_interval",
         num_classes: int = 6,
-        bins: typing.List = None,
-        speed_colors: typing.List = None,
+        bins: list | None = None,
+        speed_colors: list | None = None,
     ):
         if not bins:
             bins = apply_classification(trajectory.speed_kmhr, num_classes, cls_method=classification_method)
@@ -50,8 +48,7 @@ def _speedmap_labels(bins):
 
 
 def apply_classification(x, k, cls_method="natural_breaks", multiples=[-2, -1, 1, 2]):
-    """
-    Function to select which classifier to apply to the speed distributed data.
+    """Function to select which classifier to apply to the speed distributed data.
 
     Parameters
     ----------

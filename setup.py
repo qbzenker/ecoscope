@@ -8,7 +8,7 @@ version_data = dict(re.findall(r'__([a-z]+)__\s*=\s*"([^"]+)"', version_file))
 
 try:
     descr = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
-except IOError:
+except OSError:
     descr = ""
 
 dependencies = [

@@ -5,8 +5,8 @@ import astropy
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from pyproj import Geod
 import shapely
+from pyproj import Geod
 
 from ecoscope.analysis import astronomy
 from ecoscope.base._dataclasses import (
@@ -20,9 +20,7 @@ from ecoscope.base.utils import cachedproperty
 
 
 class EcoDataFrame(gpd.GeoDataFrame):
-    """
-    `EcoDataFrame` extends `geopandas.GeoDataFrame` to provide customizations and allow for simpler extension.
-    """
+    """`EcoDataFrame` extends `geopandas.GeoDataFrame` to provide customizations and allow for simpler extension."""
 
     @property
     def _constructor(self):
@@ -114,8 +112,8 @@ class EcoDataFrame(gpd.GeoDataFrame):
 
 
 class Relocations(EcoDataFrame):
-    """
-    Relocation is a model for a set of fixes from a given subject.
+    """Relocation is a model for a set of fixes from a given subject.
+
     Because fixes are temporal, they can be ordered asc or desc. The additional_data dict can contain info
     specific to the subject and relocations: name, type, region, sex etc. These values are applicable to all
     fixes in the relocations array. If they vary, then they should be put into each fix's additional_data dict.
@@ -238,7 +236,7 @@ class Relocations(EcoDataFrame):
         return gdf
 
     def apply_reloc_filter(self, fix_filter=None, inplace=False):
-        """Apply a given filter by marking the fix junk_status based on the conditions of a filter"""
+        """Apply a given filter by marking the fix junk_status based on the conditions of a filter."""
 
         if not self["fixtime"].is_monotonic_increasing:
             self.sort_values("fixtime", inplace=True)
@@ -296,24 +294,20 @@ class Relocations(EcoDataFrame):
 
     @cachedproperty
     def cluster_radius(self):
-        """
-        The cluster radius is the largest distance between a point in the relocationss and the
-        centroid of the relocationss
-        """
+        """The cluster radius is the largest distance between a point in the relocationss and the centroid of the
+        relocationss."""
         distance = self.distance_from_centroid
         return distance.max()
 
     @cachedproperty
     def cluster_std_dev(self):
-        """
-        The cluster standard deviation is the standard deviation of the radii from the centroid
-        to each point making up the cluster
-        """
+        """The cluster standard deviation is the standard deviation of the radii from the centroid to each point making
+        up the cluster."""
         distance = self.distance_from_centroid
         return np.std(distance)
 
     def threshold_point_count(self, threshold_dist):
-        """Counts the number of points in the cluster that are within a threshold distance of the geographic centre"""
+        """Counts the number of points in the cluster that are within a threshold distance of the geographic centre."""
         distance = self.distance_from_centroid
         return distance[distance <= threshold_dist].size
 
@@ -325,16 +319,16 @@ class Relocations(EcoDataFrame):
 
 
 class Trajectory(EcoDataFrame):
-    """
-    A trajectory represents a time-ordered collection of segments.
-    Currently only straight track segments exist.
-    It is based on an underlying relocs object that is the point representation
+    """A trajectory represents a time-ordered collection of segments.
+
+    Currently only straight track segments exist. It is based on an underlying relocs object that is the point
+    representation
     """
 
     @classmethod
     def from_relocations(cls, gdf, *args, **kwargs):
-        """
-        Create Trajectory class from Relocation dataframe.
+        """Create Trajectory class from Relocation dataframe.
+
         Parameters
         ----------
         gdf: Geodataframe
@@ -360,9 +354,7 @@ class Trajectory(EcoDataFrame):
         return cls(gdf, *args, **kwargs)
 
     def get_displacement(self):
-        """
-        Get displacement in meters between first and final fixes.
-        """
+        """Get displacement in meters between first and final fixes."""
 
         if not self["segment_start"].is_monotonic_increasing:
             self = self.sort_values("segment_start")
@@ -373,10 +365,8 @@ class Trajectory(EcoDataFrame):
         return start.distance(end)
 
     def get_tortuosity(self):
-        """
-        Get tortuosity for dataframe defined as distance traveled divided by displacement between first and final
-        points.
-        """
+        """Get tortuosity for dataframe defined as distance traveled divided by displacement between first and final
+        points."""
 
         return self["dist_meters"].sum() / self.get_displacement()
 
@@ -532,8 +522,8 @@ class Trajectory(EcoDataFrame):
         return angles.rename("turn_angle").reindex(self.index)
 
     def upsample(self, freq):
-        """
-        Interpolate to create upsampled Relocations
+        """Interpolate to create upsampled Relocations.
+
         Parameters
         ----------
         freq : str, pd.Timedelta or pd.DateOffset
@@ -573,8 +563,8 @@ class Trajectory(EcoDataFrame):
         return Relocations.from_gdf(self.groupby("groupby_col").apply(f).reset_index(level=0))
 
     def to_relocations(self):
-        """
-        Converts a Trajectory object to a Relocations object.
+        """Converts a Trajectory object to a Relocations object.
+
         Returns
         -------
         ecoscope.base.Relocations
@@ -598,8 +588,8 @@ class Trajectory(EcoDataFrame):
         return Relocations.from_gdf(self.groupby("groupby_col").apply(f).reset_index(drop=True))
 
     def downsample(self, freq, tolerance="0S", interpolation=False):
-        """
-        Function to downsample relocations.
+        """Function to downsample relocations.
+
         Parameters
         ----------
         freq: str, pd.Timedelta or pd.DateOffset

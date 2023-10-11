@@ -1,6 +1,5 @@
 import email
 import os
-import typing
 
 import pandas as pd
 import requests
@@ -13,8 +12,8 @@ def to_hex(val, default="#ff0000"):
     return default
 
 
-def pack_columns(dataframe: pd.DataFrame, columns: typing.List):
-    """This method would add all extra columns to single column"""
+def pack_columns(dataframe: pd.DataFrame, columns: list):
+    """This method would add all extra columns to single column."""
     metadata_cols = list(set(dataframe.columns).difference(set(columns)))
 
     # To prevent additional column from being dropped, name the column metadata (rename it back).
@@ -25,9 +24,9 @@ def pack_columns(dataframe: pd.DataFrame, columns: typing.List):
     return dataframe
 
 
-def extract_voltage(s: typing.Dict):
-    """
-    Extracts voltage from different source-provider in EarthRanger
+def extract_voltage(s: dict):
+    """Extracts voltage from different source-provider in EarthRanger.
+
     Parameters
     ----------
     s: typing.Dict
@@ -35,7 +34,6 @@ def extract_voltage(s: typing.Dict):
     Returns
     -------
     typing.Any
-
     """
     additional = s["extra__observation_details"] or {}
     voltage = additional.get("battery", None)  # savannah tracking
