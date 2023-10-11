@@ -1,4 +1,4 @@
-# Changes I've made
+# Changes
 
 1. Use poetry for package management and build tool
 2. Use python 3.11
