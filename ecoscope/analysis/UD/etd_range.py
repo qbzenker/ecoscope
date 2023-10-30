@@ -144,7 +144,7 @@ def calculate_etd_range(
         maxspeed = max_speed_kmhr
     else:
         # Use a value calculated from the CDF
-        maxspeed = weibull_pdf.scale * math.pow(
+        maxspeed = weibull_pdf.scale * math.pow(  # type: ignore
             -1 * math.log(1.0 - max_speed_percentage),
             1.0 / weibull_pdf.shape,
         )
