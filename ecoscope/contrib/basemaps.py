@@ -289,12 +289,12 @@ def xyz_to_folium() -> dict:
         )
 
     for key in WMS_TILES:
-        name = WMS_TILES[key]["name"]
-        url = WMS_TILES[key]["url"]
+        name = WMS_TILES[key]["name"]  # type: ignore
+        url = WMS_TILES[key]["url"]  # type: ignore
         layers = WMS_TILES[key]["layers"]
         fmt = WMS_TILES[key]["format"]
         transparent = WMS_TILES[key]["transparent"]
-        attribution = WMS_TILES[key]["attribution"]
+        attribution = WMS_TILES[key]["attribution"]  # type: ignore
         folium_dict[key] = folium.WmsTileLayer(
             url=url,
             layers=layers,
@@ -311,10 +311,7 @@ def xyz_to_folium() -> dict:
         name = xyz_dict[item].name
         url = xyz_dict[item].build_url()
         attribution = xyz_dict[item].attribution
-        if "max_zoom" in xyz_dict[item].keys():
-            max_zoom = xyz_dict[item]["max_zoom"]
-        else:
-            max_zoom = 22
+        max_zoom = xyz_dict[item]["max_zoom"] if "max_zoom" in xyz_dict[item] else 22
         folium_dict[name] = folium.TileLayer(
             tiles=url,
             attr=attribution,

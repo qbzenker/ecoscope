@@ -24,8 +24,8 @@ class SpeedDataFrame(ecoscope.base.EcoDataFrame):
 
         speed_colors = speed_colors[: len(bins) - 1]
 
-        # TODO: potential issue here - does this work?
-        speed_df = cls(
+        # TODO: potential issue here - does this work? Mypy suggests it doesn't
+        speed_df = cls(  # type: ignore
             geometry=gpd.GeoSeries(
                 trajectory.geometry.values,
                 index=pd.Index(

@@ -23,20 +23,14 @@ import os
 
 import folium
 import folium.plugins as plugins
-
-# from .common import *
-from .basemaps import xyz_to_folium
-
-# from .osm import *
-
-builtin_legends = {}
-
-
 from branca.element import Figure, JavascriptLink
 from folium.map import Layer
 from jinja2 import Template
 
-basemaps = xyz_to_folium()
+from ecoscope.contrib.basemaps import xyz_to_folium
+from ecoscope.io.utils import to_hex
+
+BASEMAPS = xyz_to_folium()
 
 
 class Map(folium.Map):
@@ -51,6 +45,7 @@ class Map(folium.Map):
         # Default map center location and zoom level
         latlon = [20, 0]
         zoom = 2
+        self.builtin_legends = {}
 
         # Interchangeable parameters between ipyleaflet and folium
         if "center" in kwargs:
@@ -140,18 +135,18 @@ class Map(folium.Map):
             pass
         elif kwargs["google_map"] is not None:
             if kwargs["google_map"].upper() == "ROADMAP":
-                layer = basemaps["ROADMAP"]
+                layer = BASEMAPS["ROADMAP"]
             elif kwargs["google_map"].upper() == "HYBRID":
-                layer = basemaps["HYBRID"]
+                layer = BASEMAPS["HYBRID"]
             elif kwargs["google_map"].upper() == "TERRAIN":
-                layer = basemaps["TERRAIN"]
+                layer = BASEMAPS["TERRAIN"]
             elif kwargs["google_map"].upper() == "SATELLITE":
-                layer = basemaps["SATELLITE"]
+                layer = BASEMAPS["SATELLITE"]
             else:
                 print(
                     f'{kwargs["google_map"]} is invalid. google_map must be one of: ["ROADMAP", "HYBRID", "TERRAIN", "SATELLITE"]. Adding the default ROADMAP.'
                 )
-                layer = basemaps["ROADMAP"]
+                layer = BASEMAPS["ROADMAP"]
             layer.add_to(self)
 
         if "layers_control" not in kwargs:
@@ -248,12 +243,12 @@ class Map(folium.Map):
                 )
 
                 self.add_layer(layer)
-            elif basemap in basemaps:
-                basemaps[basemap].add_to(self)
+            elif basemap in BASEMAPS:
+                BASEMAPS[basemap].add_to(self)
             else:
-                print("Basemap can only be one of the following: {}".format(", ".join(basemaps.keys())))
+                print("Basemap can only be one of the following: {}".format(", ".join(BASEMAPS.keys())))
         except Exception:
-            raise Exception("Basemap can only be one of the following: {}".format(", ".join(basemaps.keys())))
+            raise Exception("Basemap can only be one of the following: {}".format(", ".join(BASEMAPS.keys())))
 
     def add_wms_layer(
         self,
@@ -997,7 +992,7 @@ class Map(folium.Map):
                 raise ValueError("The legend colors must be a list.")
             elif all(isinstance(item, tuple) for item in colors):
                 try:
-                    colors = ["#" + rgb_to_hex(x) for x in colors]
+                    colors = ["#" + to_hex(x) for x in colors]
                 except Exception as e:
                     raise Exception(e)
             elif all((item.startswith("#") and len(item) == 7) for item in colors):
@@ -1012,19 +1007,19 @@ class Map(folium.Map):
         if len(labels) != len(colors):
             raise ValueError("The legend keys and values must be the same length.")
 
-        allowed_builtin_legends = builtin_legends.keys()
+        allowed_builtin_legends = self.builtin_legends.keys()
         if builtin_legend is not None:
             if builtin_legend not in allowed_builtin_legends:
                 raise ValueError(
                     "The builtin legend must be one of the following: {}".format(", ".join(allowed_builtin_legends))
                 )
             else:
-                legend_dict = builtin_legends[builtin_legend]
+                legend_dict = self.builtin_legends[builtin_legend]
                 labels = list(legend_dict.keys())
                 colors = list(legend_dict.values())
                 if all(isinstance(item, tuple) for item in colors):
                     try:
-                        colors = [rgb_to_hex(x) for x in colors]
+                        colors = [to_hex(x) for x in colors]
                     except Exception as e:
                         raise Exception(e)
                 elif all(isinstance(item, str) for item in colors):
@@ -1039,7 +1034,7 @@ class Map(folium.Map):
 
                 if all(isinstance(item, tuple) for item in colors):
                     try:
-                        colors = ["#" + rgb_to_hex(x) for x in colors]
+                        colors = ["#" + to_hex(x) for x in colors]
                     except Exception as e:
                         raise Exception(e)
                 elif all((item.startswith("#") and len(item) == 7) for item in colors):
@@ -2148,8 +2143,8 @@ class Map(folium.Map):
 
         """
         try:
-            if left_layer in basemaps.keys():
-                left_layer = basemaps[left_layer]
+            if left_layer in BASEMAPS.keys():
+                left_layer = BASEMAPS[left_layer]
             elif isinstance(left_layer, str):
                 if left_layer.startswith("http") and left_layer.endswith(".tif"):
                     url = cog_tile(left_layer)
@@ -2170,11 +2165,11 @@ class Map(folium.Map):
                 pass
             else:
                 raise ValueError(
-                    f"left_layer must be one of the following: {', '.join(basemaps.keys())} or a string url to a tif file."
+                    f"left_layer must be one of the following: {', '.join(BASEMAPS.keys())} or a string url to a tif file."
                 )
 
-            if right_layer in basemaps.keys():
-                right_layer = basemaps[right_layer]
+            if right_layer in BASEMAPS.keys():
+                right_layer = BASEMAPS[right_layer]
             elif isinstance(right_layer, str):
                 if right_layer.startswith("http") and right_layer.endswith(".tif"):
                     url = cog_tile(right_layer)
@@ -2195,7 +2190,7 @@ class Map(folium.Map):
                 pass
             else:
                 raise ValueError(
-                    f"right_layer must be one of the following: {', '.join(basemaps.keys())} or a string url to a tif file."
+                    f"right_layer must be one of the following: {', '.join(BASEMAPS.keys())} or a string url to a tif file."
                 )
 
             control = SplitControl(layer_left=left_layer, layer_right=right_layer, name="Split Control")
