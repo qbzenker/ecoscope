@@ -38,6 +38,7 @@ def create_meshgrid(
     -------
     gs : geopandas.GeoSeries
         Grid of boxes. CRS is converted to `out_crs`.
+
     """
 
     a = gpd.array.from_shapely([aoi], crs=in_crs)
@@ -77,6 +78,7 @@ class cachedproperty:  # noqa
     """The ``cachedproperty`` is used similar to :class:`property`, except that the wrapped method is only called once.
 
     This is commonly used to implement lazy attributes.
+
     """
 
     def __init__(self, func):

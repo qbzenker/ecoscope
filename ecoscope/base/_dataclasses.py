@@ -14,7 +14,7 @@ class RelocsCoordinateFilter:
     max_x: float = 180.0
     min_y: float = -90.0
     max_y: float = 90.0
-    filter_point_coords: list[list[float]] | geopandas.GeoSeries = field(default_factory=[[0.0, 0.0]])
+    filter_point_coords: list[list[float]] | geopandas.GeoSeries = field(default=[[0.0, 0.0]])
 
     def __post_init__(self):
         if isinstance(self.filter_point_coords, list):
@@ -44,6 +44,7 @@ class RelocsDistFilter:
     """Filter based on the distance between consecutive fixes.
 
     Fixes are filtered to the range [min_dist_km, max_dist_km].
+
     """
 
     min_dist_km: float = 0.0

@@ -22,6 +22,7 @@ def init(silent=False, pyppeteer=False, force=False):
         Installs Pyppeteer and Chrome in a colab environment
     force : bool, optional
         Ignores `__initialized`
+
     """
 
     global __initialized

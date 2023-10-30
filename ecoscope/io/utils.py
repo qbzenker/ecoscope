@@ -34,6 +34,7 @@ def extract_voltage(s: dict):
     Returns
     -------
     typing.Any
+
     """
     additional = s["extra__observation_details"] or {}
     voltage = additional.get("battery", None)  # savannah tracking
@@ -47,7 +48,7 @@ def extract_voltage(s: dict):
 
 
 def download_file(url, path, overwrite_existing=False, chunk_size=1024, **request_kwargs):
-    r = requests.get(url, stream=True, **request_kwargs)
+    r = requests.get(url, stream=True, timeout=30, **request_kwargs)
 
     if os.path.isdir(path):
         m = email.message.Message()

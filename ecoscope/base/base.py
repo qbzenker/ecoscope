@@ -9,9 +9,13 @@ import shapely
 from pyproj import Geod
 
 from ecoscope.analysis import astronomy
-from ecoscope.base._dataclasses import (RelocsCoordinateFilter,
-                                        RelocsDateRangeFilter,
-                                        RelocsDistFilter, TrajSegFilter)
+from ecoscope.base._dataclasses import (
+    RelocsCoordinateFilter,
+    RelocsDateRangeFilter,
+    RelocsDistFilter,
+    RelocsSpeedFilter,
+    TrajSegFilter,
+)
 from ecoscope.base.utils import cachedproperty
 
 
@@ -102,6 +106,7 @@ class Relocations(EcoDataFrame):
     Because fixes are temporal, they can be ordered asc or desc. The additional_data dict can contain info
     specific to the subject and relocations: name, type, region, sex etc. These values are applicable to all
     fixes in the relocations array. If they vary, then they should be put into each fix's additional_data dict.
+
     """
 
     @classmethod
@@ -309,6 +314,7 @@ class Trajectory(EcoDataFrame):
 
     Currently only straight track segments exist. It is based on an underlying relocs object that is the point
     representation
+
     """
 
     @classmethod
@@ -321,9 +327,11 @@ class Trajectory(EcoDataFrame):
             Relocation geodataframe with relevant columns
         args
         kwargs
+
         Returns
         -------
         Trajectory
+
         """
         assert isinstance(gdf, Relocations)
         assert {"groupby_col", "fixtime", "geometry"}.issubset(gdf)
@@ -365,6 +373,7 @@ class Trajectory(EcoDataFrame):
             crossings of the target over a 24-hour period, default is 150 which
             yields rise time precisions better than one minute.
             https://github.com/astropy/astroplan/pull/424
+
         Returns
         -------
         pd.Series:
@@ -514,9 +523,11 @@ class Trajectory(EcoDataFrame):
         ----------
         freq : str, pd.Timedelta or pd.DateOffset
             Sampling frequency for new Relocations object
+
         Returns
         -------
         relocs : ecoscope.base.Relocations
+
         """
 
         freq = pd.tseries.frequencies.to_offset(freq)
@@ -554,6 +565,7 @@ class Trajectory(EcoDataFrame):
         Returns
         -------
         ecoscope.base.Relocations
+
         """
 
         def f(traj):
@@ -584,9 +596,11 @@ class Trajectory(EcoDataFrame):
             Tolerance on the downsampling frequency
         interpolation: bool, optional
             If true, interpolates locations on the whole trajectory
+
         Returns
         -------
         ecoscope.base.Relocations
+
         """
 
         if interpolation:

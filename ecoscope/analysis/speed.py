@@ -24,6 +24,7 @@ class SpeedDataFrame(ecoscope.base.EcoDataFrame):
 
         speed_colors = speed_colors[: len(bins) - 1]
 
+        # TODO: potential issue here - does this work?
         speed_df = cls(
             geometry=gpd.GeoSeries(
                 trajectory.geometry.values,
@@ -47,7 +48,7 @@ def _speedmap_labels(bins):
     return [f"{bins[i]:.1f} - {bins[i + 1]:.1f} km/hr" for i in range(len(bins) - 1)]
 
 
-def apply_classification(x, k, cls_method="natural_breaks", multiples: list | None = None):
+def apply_classification(x, k, cls_method="natural_breaks", multiples: list | None = None) -> list[float]:
     """Function to select which classifier to apply to the speed distributed data.
 
     Parameters
@@ -58,14 +59,16 @@ def apply_classification(x, k, cls_method="natural_breaks", multiples: list | No
         Number of classes required.
     cls_method : str
         Classification method
-    multiples : Listlike
-        The multiples of the standard deviation to add/subtract from the sample mean to define the bins. defaults=
+    multiples : list | None
+        The multiples of the standard deviation to add/subtract from the sample mean to define the bins.
+        defaults=[-2, -1, 1, 2]
+
     """
     multiples = multiples or [-2, -1, 1, 2]
 
     classifier = classification_methods.get(cls_method)
     if not classifier:
-        return
+        return []
 
     map_classifier = classifier(x, multiples) if cls_method == "std_mean" else classifier(x, k)
     edges, _, _ = mapclassify.classifiers._format_intervals(map_classifier, fmt="{:.2f}")

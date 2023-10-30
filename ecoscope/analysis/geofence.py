@@ -71,6 +71,7 @@ class GeoFenceCrossing:
         Returns
         -------
             ecoscope.base.EcoDataFrame
+
         """
         trajectory = trajectory.copy()
         trajectory["start_point"] = shapely.get_point(trajectory.geometry, 0)

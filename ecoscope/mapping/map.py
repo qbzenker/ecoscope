@@ -20,32 +20,7 @@ from ecoscope.contrib.foliumap import Map
 warnings.filterwarnings("ignore", "GeoSeries.isna", UserWarning)
 
 
-class EcoMapMixin:
-    def add_speedmap(
-        self,
-        trajectory: gpd.GeoDataFrame,
-        classification_method: str = "equal_interval",
-        num_classes: int = 6,
-        speed_colors: list = None,
-        bins: list = None,
-        legend: bool = True,
-    ):
-        speed_df = ecoscope.analysis.SpeedDataFrame.from_trajectory(
-            trajectory=trajectory,
-            classification_method=classification_method,
-            num_classes=num_classes,
-            speed_colors=speed_colors,
-            bins=bins,
-        )
-        self.add_gdf(speed_df, color=speed_df["speed_colour"])
-
-        if legend:
-            self.add_legend(legend_dict=dict(zip(speed_df.label, speed_df.speed_colour)))
-
-        return speed_df
-
-
-class EcoMap(EcoMapMixin, Map):
+class EcoMap(Map):
     def __init__(self, *args, static=False, print_control=True, **kwargs):
         kwargs["attr"] = kwargs.get("attr", " ")
         kwargs["canvas"] = kwargs.get("canvas", True)
@@ -98,6 +73,29 @@ class EcoMap(EcoMapMixin, Map):
             }
 
         return super().add_legend(*args, **kwargs)
+
+    def add_speedmap(
+        self,
+        trajectory: gpd.GeoDataFrame,
+        classification_method: str = "equal_interval",
+        num_classes: int = 6,
+        speed_colors: list | None = None,
+        bins: list | None = None,
+        legend: bool = True,
+    ):
+        speed_df = ecoscope.analysis.SpeedDataFrame.from_trajectory(
+            trajectory=trajectory,
+            classification_method=classification_method,
+            num_classes=num_classes,
+            speed_colors=speed_colors,
+            bins=bins,
+        )
+        self.add_gdf(speed_df, color=speed_df["speed_colour"])
+
+        if legend:
+            self.add_legend(legend_dict=dict(zip(speed_df.label, speed_df.speed_colour)))
+
+        return speed_df
 
     def add_north_arrow(self, position="topright", scale=1.0):
         """
@@ -208,6 +206,7 @@ class EcoMap(EcoMapMixin, Map):
         Returns
         -------
         None
+
         """
 
         try:
@@ -256,6 +255,7 @@ class EcoMap(EcoMapMixin, Map):
         ----------
         bounds : [x1, y1, x2, y2]
             Map extent in WGS 84
+
         """
 
         assert -180 < bounds[0] <= bounds[2] < 180
@@ -287,6 +287,7 @@ class EcoMap(EcoMapMixin, Map):
             Matplotlib colormap to apply to raster
         colorbar : bool
             Whether to add colorbar for provided `cmap`. Does nothing if `cmap` is not provided.
+
         """
 
         with rasterio.open(path) as src:
@@ -353,6 +354,7 @@ class ControlElement(MacroElement):
         HTML to render an element from.
     position : str
         Possible values are 'topleft', 'topright', 'bottomleft' or 'bottomright'.
+
     """
 
     _template = Template(
@@ -389,6 +391,7 @@ class FloatElement(MacroElement):
     left, right, top, bottom : str
         Distance between edge of map and nearest edge of element. Two should be provided. Style can also be specified
         in html.
+
     """
 
     _template = Template(
@@ -432,6 +435,7 @@ class GeoTIFFElement(MacroElement):
         URL of GeoTIFF
     zoom : bool
         Zoom to displayed GeoTIFF
+
     """
 
     _template = Template(

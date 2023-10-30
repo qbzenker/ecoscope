@@ -14,6 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 """
 
 __version__ = "be6ccdfa5450b775724547b6ef50f213c820be85"
@@ -43,6 +44,7 @@ class Map(folium.Map):
 
     Returns:
         object: folium map object.
+
     """
 
     def __init__(self, **kwargs):
@@ -164,6 +166,7 @@ class Map(folium.Map):
 
         Args:
             layer (TileLayer): A TileLayer instance.
+
         """
         layer.add_to(self)
 
@@ -181,6 +184,7 @@ class Map(folium.Map):
         """Adds Layer control to the map.
 
         Reference: https://ipython.readthedocs.io/en/stable/config/integrating.html#MyObject._repr_mimebundle_
+
         """
         if self.options["layersControl"]:
             self.add_layer_control()
@@ -192,6 +196,7 @@ class Map(folium.Map):
             lon (float): The longitude of the center, in degrees.
             lat (float): The latitude of the center, in degrees.
             zoom (int, optional): The zoom level, from 1 to 24. Defaults to 10.
+
         """
         self.fit_bounds([[lat, lon], [lat, lon]], max_zoom=zoom)
 
@@ -200,6 +205,7 @@ class Map(folium.Map):
 
         Args:
             bounds (list | tuple): A list/tuple containing minx, miny, maxx, maxy values for the bounds.
+
         """
         #  The folium fit_bounds method takes lat/lon bounds in the form [[south, west], [north, east]].
         self.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
@@ -209,6 +215,7 @@ class Map(folium.Map):
 
         Args:
             gdf (GeoDataFrame): A GeoPandas GeoDataFrame.
+
         """
         bounds = gdf.total_bounds
         self.zoom_to_bounds(bounds)
@@ -218,6 +225,7 @@ class Map(folium.Map):
 
         Args:
             basemap (str, optional): Can be one of string from ee_basemaps. Defaults to 'HYBRID'.
+
         """
         import xyzservices
 
@@ -276,6 +284,7 @@ class Map(folium.Map):
             transparent (bool, optional): Whether the layer shall allow transparency. Defaults to True.
             version (str, optional): Version of the WMS service to use. Defaults to "1.1.1".
             styles (str, optional): Comma-separated list of WMS styles. Defaults to "".
+
         """
         try:
             folium.raster_layers.WmsTileLayer(
@@ -318,6 +327,7 @@ class Map(folium.Map):
             shown (bool, optional): A flag indicating whether the layer should be on by default. Defaults to True.
             opacity (float, optional): Sets the opacity for the layer.
             API_key (str, optional): – API key for Cloudmade or Mapbox tiles. Defaults to True.
+
         """
 
         try:
@@ -364,6 +374,7 @@ class Map(folium.Map):
             nodata (float, optional): The value from the band to use to interpret as not valid data. Defaults to None.
             attribution (str, optional): Attribution for the source raster. This defaults to a message about it being a local file.. Defaults to None.
             layer_name (str, optional): The layer name to use. Defaults to 'Local COG'.
+
         """
 
         tile_layer, tile_client = get_local_tile_layer(
@@ -415,6 +426,7 @@ class Map(folium.Map):
             nodata (float, optional): The value from the band to use to interpret as not valid data. Defaults to None.
             attribution (str, optional): Attribution for the source raster. This defaults to a message about it being a local file.. Defaults to None.
             layer_name (str, optional): The layer name to use. Defaults to None.
+
         """
         if isinstance(source, str) and source.startswith("http"):
             self.add_local_tile(
@@ -466,6 +478,7 @@ class Map(folium.Map):
             shift_lon (bool, optional): Flag to shift longitude values from [0, 360] to the range [-180, 180]. Defaults to True.
             lat (str, optional): Name of the latitude variable. Defaults to 'lat'.
             lon (str, optional): Name of the longitude variable. Defaults to 'lon'.
+
         """
 
         tif, vars = netcdf_to_tif(filename, shift_lon=shift_lon, lat=lat, lon=lon, return_vars=True)
@@ -561,6 +574,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
 
         gdf = osm_gdf_from_geocode(query, which_result=which_result, by_osmid=by_osmid, buffer_dist=buffer_dist)
@@ -601,6 +615,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         gdf = osm_gdf_from_address(address, tags, dist)
         geojson = gdf.__geo_interface__
@@ -642,6 +657,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         gdf = osm_gdf_from_place(query, tags, which_result, buffer_dist)
         geojson = gdf.__geo_interface__
@@ -681,6 +697,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         gdf = osm_gdf_from_point(center_point, tags, dist)
         geojson = gdf.__geo_interface__
@@ -718,6 +735,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         gdf = osm_gdf_from_polygon(polygon, tags)
         geojson = gdf.__geo_interface__
@@ -761,6 +779,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         gdf = osm_gdf_from_bbox(north, south, east, west, tags)
         geojson = gdf.__geo_interface__
@@ -796,6 +815,7 @@ class Map(folium.Map):
             style_callback (function, optional): Styling function that is called for each feature, and should return the feature style. This styling function takes the feature as argument. Defaults to None.
             fill_colors (list, optional): The random colors to use for filling polygons. Defaults to ["black"].
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         pass  # folium can't get map bounds. See https://github.com/python-visualization/folium/issues/1118
         # bounds = self.get_bounds()
@@ -841,6 +861,7 @@ class Map(folium.Map):
             shown (bool, optional): A flag indicating whether the layer should be on by default. Defaults to True.
             bands (list, optional): A list of bands to use. Defaults to None.
             titiler_endpoint (str, optional): Titiler endpoint. Defaults to "https://titiler.xyz".
+
         """
         tile_url = cog_tile(url, bands, titiler_endpoint, **kwargs)
         bounds = cog_bounds(url, titiler_endpoint)
@@ -890,6 +911,7 @@ class Map(folium.Map):
             attribution (str, optional): The attribution to use. Defaults to ''.
             opacity (float, optional): The opacity of the layer. Defaults to 1.
             shown (bool, optional): A flag indicating whether the layer should be on by default. Defaults to True.
+
         """
         tile_url = stac_tile(url, collection, item, assets, bands, titiler_endpoint, **kwargs)
         bounds = stac_bounds(url, collection, item, titiler_endpoint)
@@ -921,6 +943,7 @@ class Map(folium.Map):
             attribution (str, optional): The attribution to use. Defaults to ''.
             opacity (float, optional): The opacity of the layer. Defaults to 1.
             shown (bool, optional): A flag indicating whether the layer should be on by default. Defaults to True.
+
         """
         tile_url = mosaic_tile(url, titiler_endpoint, **kwargs)
         bounds = mosaic_bounds(url, titiler_endpoint)
@@ -1070,6 +1093,7 @@ class Map(folium.Map):
             caption (str, optional): The caption for the colormap. Defaults to "".
             categorical (bool, optional): Whether or not to create a categorical colormap. Defaults to False.
             step (int, optional): The step to split the LinearColormap into a StepColormap. Defaults to None.
+
         """
         from box import Box
         from branca.colormap import LinearColormap
@@ -1146,6 +1170,7 @@ class Map(folium.Map):
 
         Raises:
             FileNotFoundError: The provided GeoJSON file could not be found.
+
         """
         import json
         import random
@@ -1240,6 +1265,7 @@ class Map(folium.Map):
             layer_name (str, optional): The layer name to be used. Defaults to "Untitled".
             zoom_to_layer (bool, optional): Whether to zoom to the layer.
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
 
         data = gdf_to_geojson(gdf, epsg="4326")
@@ -1273,6 +1299,7 @@ class Map(folium.Map):
             layer_name (str, optional): The layer name to be used. Defaults to "Untitled".
             zoom_to_layer (bool, optional): Whether to zoom to the layer.
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         if "fill_colors" in kwargs:
             kwargs.pop("fill_colors")
@@ -1301,6 +1328,7 @@ class Map(folium.Map):
 
         Raises:
             FileNotFoundError: The provided KML file could not be found.
+
         """
 
         if in_kml.startswith("http") and in_kml.endswith(".kml"):
@@ -1339,6 +1367,7 @@ class Map(folium.Map):
             mask (dict | GeoDataFrame or GeoSeries | shapely Geometry, optional): Filter for features that intersect with the given dict-like geojson geometry, GeoSeries, GeoDataFrame or shapely geometry. CRS mis-matches are resolved if given a GeoSeries or GeoDataFrame. Cannot be used with bbox. Defaults to None.
             rows (int or slice, optional): Load in specific rows by passing an integer (first n rows) or a slice() object.. Defaults to None.
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
+
         """
         if not filename.startswith("http"):
             filename = os.path.abspath(filename)
@@ -1409,6 +1438,7 @@ class Map(folium.Map):
             open (bool, optional): Whether to open the map. Defaults to True.
             formatting (ReportFormatting, optional): Set the basic styling for your report.
             token (str, optional): The token to use to datapane to publish the map. See https://docs.datapane.com/tut-getting-started. Defaults to None.
+
         """
         import warnings
         import webbrowser
@@ -1458,6 +1488,7 @@ class Map(folium.Map):
 
         Returns:
             str: A string containing the HTML code.
+
         """
 
         if self.options["layersControl"]:
@@ -1507,6 +1538,7 @@ class Map(folium.Map):
 
         Returns:
             streamlit.components: components.html object.
+
         """
 
         try:
@@ -1542,6 +1574,7 @@ class Map(folium.Map):
 
         Returns:
             tuple: The center of the map.
+
         """
 
         bounds = st_component["bounds"]
@@ -1559,6 +1592,7 @@ class Map(folium.Map):
 
         Returns:
             tuple: The bounds of the map.
+
         """
 
         bounds = st_component["bounds"]
@@ -1575,6 +1609,7 @@ class Map(folium.Map):
 
         Returns:
             folium.Map: The map.
+
         """
 
         try:
@@ -1596,6 +1631,7 @@ class Map(folium.Map):
 
         Returns:
             str: The last draw of the map.
+
         """
 
         return st_component["last_active_drawing"]
@@ -1608,6 +1644,7 @@ class Map(folium.Map):
 
         Returns:
             str: The last click of the map.
+
         """
 
         coords = st_component["last_clicked"]
@@ -1621,6 +1658,7 @@ class Map(folium.Map):
 
         Returns:
             list: The draw features of the map.
+
         """
 
         return st_component["all_drawings"]
@@ -1633,6 +1671,7 @@ class Map(folium.Map):
             align (str, optional): The alignment of the title, can be ["center", "left", "right"]. Defaults to "center".
             font_size (str, optional): The font size in the unit of px. Defaults to "16px".
             style ([type], optional): The style to use. Defaults to None.
+
         """
         if style is None:
             title_html = """
@@ -1655,6 +1694,7 @@ class Map(folium.Map):
         (int, optional): Height of the map. Defaults to 600.     read_only (bool, optional): Whether to hide the side
         panel to disable map customization. Defaults to False.     out_file (str, optional): Output html file path.
         Defaults to None.
+
         """
         if isinstance(self, folium.Map):
             if out_file is None:
@@ -1675,6 +1715,7 @@ class Map(folium.Map):
             wms (str): The wms to use. For example, "Current", "ACS 2021", "Census 2020".  See the complete list at https://tigerweb.geo.census.gov/tigerwebmain/TIGERweb_wms.html
             layer (str): The layer name to add to the map.
             census_dict (dict, optional): A dictionary containing census data. Defaults to None. It can be obtained from the get_census_dict() function.
+
         """
 
         try:
@@ -1711,6 +1752,7 @@ class Map(folium.Map):
 
         Raises:
             ValueError: The provider is not valid. It must start with xyz or qms.
+
         """
         import xyzservices.providers as xyz
         from xyzservices import TileProvider
@@ -1817,6 +1859,7 @@ class Map(folium.Map):
             angle (int, optional): The angle of the icon. Defaults to 0.
             prefix (str, optional): The prefix states the source of the icon. 'fa' for font-awesome or 'glyphicon' for bootstrap 3. Defaults to 'fa'.
             add_legend (bool, optional): If True, a legend will be added to the map. Defaults to True.
+
         """
         import pandas as pd
 
@@ -1949,6 +1992,7 @@ class Map(folium.Map):
             tooltip (list, optional): A list of column names to be used as the tooltip. Defaults to None.
             min_width (int, optional): The minimum width of the popup. Defaults to 100.
             max_width (int, optional): The maximum width of the popup. Defaults to 200.
+
         """
         import pandas as pd
 
@@ -2101,6 +2145,7 @@ class Map(folium.Map):
         Args:
             left_layer (str, optional): The layer tile layer. Defaults to 'TERRAIN'.
             right_layer (str, optional): The right tile layer. Defaults to 'OpenTopoMap'.
+
         """
         try:
             if left_layer in basemaps.keys():
@@ -2235,6 +2280,7 @@ class Map(folium.Map):
                 highlight_function = lambda feat: {"fillColor": feat["properties"]["color"]}
             info_mode (str, optional): Displays the attributes by either on_hover or on_click. Any value other than "on_hover" or "on_click" will be treated as None. Defaults to "on_hover".
             encoding (str, optional): The encoding of the GeoJSON file. Defaults to "utf-8".
+
         """
 
         import warnings
@@ -2412,6 +2458,7 @@ class Map(folium.Map):
             url (str): http URL or local file path to the image.
             bounds (tuple): bounding box of the image in the format of (lower_left(lat, lon), upper_right(lat, lon)), such as ((13, -130), (32, -100)).
             name (str): name of the layer to show on the layer control.
+
         """
         raise NotImplementedError(
             "The folium plotting backend does not support this function. Use the ipyleaflet plotting backend instead."
@@ -2451,6 +2498,7 @@ class Map(folium.Map):
         Args:
             out_file (str): The output file path.
             indent (int, optional): The indentation level when saving data as a GeoJSON. Defaults to 4.
+
         """
         print("The folium plotting backend does not support this function.")
 
@@ -2459,6 +2507,7 @@ class Map(folium.Map):
 
         Args:
             data (dict | str): The data to edit. It can be a GeoJSON dictionary or a file path.
+
         """
         print("The folium plotting backend does not support this function.")
 
@@ -2538,6 +2587,7 @@ def delete_dp_report(name):
 
     Args:
         name (str): Name of the report to delete.
+
     """
     try:
         import datapane as dp
@@ -2612,6 +2662,7 @@ def st_map_center(lat, lon):
 
     Returns:
         list: The map center coordinates.
+
     """
     try:
         import streamlit as st
@@ -2630,6 +2681,7 @@ def st_save_bounds(st_component):
 
     Args:
         map (folium.folium.Map): The map to save the bounds from.
+
     """
     try:
         import streamlit as st

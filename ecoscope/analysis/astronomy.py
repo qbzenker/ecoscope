@@ -18,6 +18,7 @@ def to_EarthLocation(geometry):
     Returns
     -------
     astropy.coordinates.EarthLocation.
+
     """
     geometry = geometry.to_crs(4326)
     trans = pyproj.Transformer.from_proj(

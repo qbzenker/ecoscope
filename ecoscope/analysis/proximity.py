@@ -13,6 +13,7 @@ class SpatialFeature:
     """A spatial geometry with an associated name and unique ID.
 
     Becomes a useful construct in several movdata calculations
+
     """
 
     name: str = ""
@@ -22,7 +23,7 @@ class SpatialFeature:
 
 @dataclass
 class ProximityProfile:
-    spatial_features: list[SpatialFeature] = field(default=list)
+    spatial_features: list[SpatialFeature] = field(default=[])
 
 
 class Proximity:
@@ -36,10 +37,12 @@ class Proximity:
         proximity_profile: ProximityProfile
             proximity setting for performing calculation
         trajectory: ecoscope.base.Trajectory
-            Geodataframe stores goemetry, speed_kmhr, heading etc. for each subject.
+            Geodataframe stores geometry, speed_kmhr, heading etc. for each subject.
+
         Returns
         -------
         pd.DataFrame
+
         """
         proximity_events = []
 

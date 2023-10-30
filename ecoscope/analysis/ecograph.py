@@ -30,6 +30,7 @@ class Ecograph:
         too slow. Can be useful for very large graphs (Default : None)
     tortuosity_length : int
         The number of steps used to compute the two tortuosity metrics (Default : 3 steps)
+
     """
 
     def __init__(self, trajectory, resolution=15, radius=2, cutoff=None, tortuosity_length=3):
@@ -86,6 +87,7 @@ class Ecograph:
         ----------
         output_path : str, Pathlike
             Output path for the CSV file
+
         """
 
         features_id = ["individual_name", "grid_id"] + self.features
@@ -115,6 +117,7 @@ class Ecograph:
             or "min"
         transform : sklearn.base.TransformerMixin or None
             A feature transform method (Default : None)
+
         """
 
         if feature in self.features:
@@ -386,6 +389,7 @@ def get_feature_gdf(input_path):
     ----------
     input_path : str, Pathlike
         Input path for the GeoTIFF file
+
     """
     shapes = []
     with rasterio.open(input_path) as src:

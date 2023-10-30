@@ -1,4 +1,9 @@
-exclude = [".git", "__pycache__", "ecoscope/contrib/foliumap.py"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "ecoscope/contrib/foliumap.py",
+    "ecoscope/io/earthranger.py",
+]
 ignore = [
     "B006",
     "B007",

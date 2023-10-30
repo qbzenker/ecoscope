@@ -65,6 +65,8 @@ types-urllib3 = "*"
 ruff = "*"
 pyupgrade = "^3.10.1"
 docformatter = "^1.7.5"
+pandas-stubs = "^2.1.1.230928"
+types-tqdm = "^4.66.0.3"
 
 [tool.pytest.ini_options]
 testpaths = "tests"
@@ -115,3 +117,11 @@ ignore = [
   "B008", # do not perform function calls in argument defaults
   "C901", # too complex
 ]
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 119
+blank = true
+
+[tool.mypy]
+ignore_missing_imports = true

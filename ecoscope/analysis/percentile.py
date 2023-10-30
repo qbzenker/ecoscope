@@ -12,7 +12,7 @@ from shapely.geometry.multipolygon import MultiPolygon
 @dataclass
 class PercentileAreaProfile:
     input_raster: str | bytes | os.PathLike
-    percentile_levels: list = field(default_factory=[50.0])
+    percentile_levels: list[float] = field(default=[50.0])
     subject_id: str = ""
 
 

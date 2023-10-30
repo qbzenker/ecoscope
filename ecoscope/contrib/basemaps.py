@@ -14,7 +14,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 """
+import collections
+
+import folium
+import xyzservices.providers as xyz
 
 __version__ = "be6ccdfa5450b775724547b6ef50f213c820be85"
 """Module for basemaps.
@@ -26,16 +31,14 @@ More WMS basemaps can be found at the following websites:
 2. MRLC NLCD Land Cover data: https://www.mrlc.gov/data-services-page
 
 3. FWS NWI Wetlands data: https://www.fws.gov/wetlands/Data/Web-Map-Services.html
-"""
-import collections
 
-import folium
-import xyzservices.providers as xyz
+"""
+
 
 # from box import Box
 
 # Custom XYZ tile services.
-xyz_tiles = {
+XYZ_TILES = {
     "OpenStreetMap": {
         "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         "attribution": "OpenStreetMap",
@@ -64,7 +67,7 @@ xyz_tiles = {
 }
 
 # Custom WMS tile services.
-wms_tiles = {
+WMS_TILES = {
     "FWS NWI Wetlands": {
         "url": "https://www.fws.gov/wetlands/arcgis/services/Wetlands/MapServer/WMSServer?",
         "layers": "1",
@@ -223,10 +226,12 @@ def get_xyz_dict(free_only=True):
     """Returns a dictionary of xyz services.
 
     Args:
-        free_only (bool, optional): Whether to return only free xyz tile services that do not require an access token. Defaults to True.
+        free_only (bool, optional): Whether to return only free xyz tile services that do not require an access token.
+        Defaults to True.
 
     Returns:
         dict: A dictionary of xyz services.
+
     """
 
     xyz_dict = {}
@@ -258,18 +263,22 @@ def get_xyz_dict(free_only=True):
     return xyz_dict
 
 
-def xyz_to_folium():
+def xyz_to_folium() -> dict:
     """Convert xyz tile services to folium tile layers.
+
+    Args:
+        None
 
     Returns:
         dict: A dictionary of folium tile layers.
+
     """
     folium_dict = {}
 
-    for key in xyz_tiles:
-        name = xyz_tiles[key]["name"]
-        url = xyz_tiles[key]["url"]
-        attribution = xyz_tiles[key]["attribution"]
+    for key in XYZ_TILES:
+        name = XYZ_TILES[key]["name"]
+        url = XYZ_TILES[key]["url"]
+        attribution = XYZ_TILES[key]["attribution"]
         folium_dict[key] = folium.TileLayer(
             tiles=url,
             attr=attribution,
@@ -279,13 +288,13 @@ def xyz_to_folium():
             max_zoom=22,
         )
 
-    for key in wms_tiles:
-        name = wms_tiles[key]["name"]
-        url = wms_tiles[key]["url"]
-        layers = wms_tiles[key]["layers"]
-        fmt = wms_tiles[key]["format"]
-        transparent = wms_tiles[key]["transparent"]
-        attribution = wms_tiles[key]["attribution"]
+    for key in WMS_TILES:
+        name = WMS_TILES[key]["name"]
+        url = WMS_TILES[key]["url"]
+        layers = WMS_TILES[key]["layers"]
+        fmt = WMS_TILES[key]["format"]
+        transparent = WMS_TILES[key]["transparent"]
+        attribution = WMS_TILES[key]["attribution"]
         folium_dict[key] = folium.WmsTileLayer(
             url=url,
             layers=layers,

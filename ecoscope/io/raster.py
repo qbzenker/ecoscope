@@ -151,6 +151,7 @@ def reduce_region(gdf, raster_path_list, reduce_func):
     :param raster_path_list: a list of raster files on disc to analyse
     :param reduce_func: a single-value function to apply to the values of the input raster
     :return: dataframe with a column of reduce values for each raster and a row for each region
+
     """
 
     reduce_func = {
