@@ -2,7 +2,6 @@ import os
 from tempfile import NamedTemporaryFile
 
 import geopandas as gpd
-import geopandas.testing
 import numpy as np
 
 import ecoscope

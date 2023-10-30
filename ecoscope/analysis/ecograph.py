@@ -15,8 +15,7 @@ import ecoscope
 
 
 class Ecograph:
-    """
-    A class that analyzes movement tracking data using Network Theory.
+    """A class that analyzes movement tracking data using Network Theory.
 
     Parameters
     ----------
@@ -31,6 +30,7 @@ class Ecograph:
         too slow. Can be useful for very large graphs (Default : None)
     tortuosity_length : int
         The number of steps used to compute the two tortuosity metrics (Default : 3 steps)
+
     """
 
     def __init__(self, trajectory, resolution=15, radius=2, cutoff=None, tortuosity_length=3):
@@ -81,13 +81,13 @@ class Ecograph:
         self.trajectory.groupby("groupby_col").progress_apply(compute)
 
     def to_csv(self, output_path):
-        """
-        Saves the features of all nodes in a CSV file
+        """Saves the features of all nodes in a CSV file.
 
         Parameters
         ----------
         output_path : str, Pathlike
             Output path for the CSV file
+
         """
 
         features_id = ["individual_name", "grid_id"] + self.features
@@ -101,8 +101,7 @@ class Ecograph:
         (pd.DataFrame.from_dict(df)).to_csv(output_path, index=False)
 
     def to_geotiff(self, feature, output_path, individual="all", interpolation=None, transform=None):
-        """
-        Saves a specific node feature as a GeoTIFF
+        """Saves a specific node feature as a GeoTIFF.
 
         Parameters
         ----------
@@ -118,6 +117,7 @@ class Ecograph:
             or "min"
         transform : sklearn.base.TransformerMixin or None
             A feature transform method (Default : None)
+
         """
 
         if feature in self.features:
@@ -383,13 +383,13 @@ class FeatureNameError(Exception):
 
 
 def get_feature_gdf(input_path):
-    """
-    Convert a GeoTIFF feature map into a GeoDataFrame
+    """Convert a GeoTIFF feature map into a GeoDataFrame.
 
     Parameters
     ----------
     input_path : str, Pathlike
         Input path for the GeoTIFF file
+
     """
     shapes = []
     with rasterio.open(input_path) as src:

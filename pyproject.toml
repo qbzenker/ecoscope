@@ -1,11 +1,78 @@
-[build-system]
-requires = ["setuptools", "wheel", "cython"]
+
+
+[tool.poetry]
+name = "ecoscope"
+version = "1.4.3"
+description = ""
+authors = ["Jake Wall <walljcg@gmail.com>"]
+license = "MIT"
+readme = "README.rst"
+
+[project.urls]
+Homepage = "https://github.com/wildlife-dynamics/ecoscope"
+Documentation = "https://ecoscope.io"
+Repository = "https://github.com/wildlife-dynamics/ecoscope"
+
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+affine = "*"
+astroplan = "*"
+astropy = "*"
+backoff = "*"
+branca = "*"
+earthengine-api = "*"
+earthranger-client = "*"
+folium = "^0.11.0"
+geopandas = "*"
+igraph = "*"
+mapclassify = "*"
+matplotlib = "*"
+networkx = "*"
+numba = "^0.58.0"
+numexpr = "*"
+numpy = "^1.22"
+pandas = "*"
+plotly = "*"
+pyarrow = "*"
+pyppeteer = "*"
+pyproj = "*"
+pytest-mock = "*"
+rasterio = "1.3.8"
+scikit-image = "*"
+scikit-learn = "*"
+scipy = "*"
+shapely = "*"
+tqdm = "*"
+xyzservices = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "*"
+black = "*"
+isort = "*"
+autoflake = "*"
+flake8 = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+pytest-httpx = "*"
+pylint = "*"
+types-requests = "*"
+types-redis = "*"
+types-pytz = "*"
+types-urllib3 = "*"
+ruff = "*"
+pyupgrade = "^3.10.1"
+docformatter = "^1.7.5"
+pandas-stubs = "^2.1.1.230928"
+types-tqdm = "^4.66.0.3"
 
 [tool.pytest.ini_options]
 testpaths = "tests"
 filterwarnings = [
-    "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
-    'ignore:Feature.geometry\(\) is deprecated. Use Element.geometry\(\):DeprecationWarning',
+  "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
+  'ignore:Feature.geometry\(\) is deprecated. Use Element.geometry\(\):DeprecationWarning',
 ]
 
 [tool.black]
@@ -31,3 +98,30 @@ exclude = '''
 [tool.coverage.run]
 source = ['ecoscope']
 omit = ['ecoscope/contrib/*']
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.ruff]
+select = [
+  "E", # pycodestyle errors
+  "W", # pycodestyle warnings
+  "F", # pyflakes
+  "I", # isort
+  "C", # flake8-comprehensions
+  "B", # flake8-bugbear
+]
+ignore = [
+  "E501", # line too long, handled by black
+  "B008", # do not perform function calls in argument defaults
+  "C901", # too complex
+]
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 119
+blank = true
+
+[tool.mypy]
+ignore_missing_imports = true

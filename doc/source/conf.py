@@ -70,7 +70,7 @@ autoapi_options = [
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns: list[str] = []
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -120,8 +120,9 @@ for file in SRC_NOTEBOOK_DIR.rglob("*.ipynb"):
 
 for folder in DST_NOTEBOOK_DIR.iterdir():
     if folder.is_dir():
-        with (folder.parent / (folder.name + ".rst")).open("w") as file:
-            file.write(
+        # TODO: does this work? Mypy suggests it doesn't
+        with (folder.parent / (folder.name + ".rst")).open("w") as file:  # type: ignore
+            file.write(  # type: ignore
                 f"""\
 {'='*len(folder.name)}
 {folder.name}

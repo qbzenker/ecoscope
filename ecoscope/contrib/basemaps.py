@@ -1,30 +1,28 @@
-"""
-MIT License
+"""MIT License.
 
 Copyright (c) 2021, Qiusheng Wu
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 """
+import collections
+
+import folium
+import xyzservices.providers as xyz
 
 __version__ = "be6ccdfa5450b775724547b6ef50f213c820be85"
-
-"""Module for basemaps. 
+"""Module for basemaps.
 
 More WMS basemaps can be found at the following websites:
 
@@ -35,14 +33,12 @@ More WMS basemaps can be found at the following websites:
 3. FWS NWI Wetlands data: https://www.fws.gov/wetlands/Data/Web-Map-Services.html
 
 """
-import collections
-import folium
-import xyzservices.providers as xyz
+
 
 # from box import Box
 
 # Custom XYZ tile services.
-xyz_tiles = {
+XYZ_TILES = {
     "OpenStreetMap": {
         "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         "attribution": "OpenStreetMap",
@@ -71,7 +67,7 @@ xyz_tiles = {
 }
 
 # Custom WMS tile services.
-wms_tiles = {
+WMS_TILES = {
     "FWS NWI Wetlands": {
         "url": "https://www.fws.gov/wetlands/arcgis/services/Wetlands/MapServer/WMSServer?",
         "layers": "1",
@@ -230,10 +226,12 @@ def get_xyz_dict(free_only=True):
     """Returns a dictionary of xyz services.
 
     Args:
-        free_only (bool, optional): Whether to return only free xyz tile services that do not require an access token. Defaults to True.
+        free_only (bool, optional): Whether to return only free xyz tile services that do not require an access token.
+        Defaults to True.
 
     Returns:
         dict: A dictionary of xyz services.
+
     """
 
     xyz_dict = {}
@@ -265,18 +263,22 @@ def get_xyz_dict(free_only=True):
     return xyz_dict
 
 
-def xyz_to_folium():
+def xyz_to_folium() -> dict:
     """Convert xyz tile services to folium tile layers.
+
+    Args:
+        None
 
     Returns:
         dict: A dictionary of folium tile layers.
+
     """
     folium_dict = {}
 
-    for key in xyz_tiles:
-        name = xyz_tiles[key]["name"]
-        url = xyz_tiles[key]["url"]
-        attribution = xyz_tiles[key]["attribution"]
+    for key in XYZ_TILES:
+        name = XYZ_TILES[key]["name"]
+        url = XYZ_TILES[key]["url"]
+        attribution = XYZ_TILES[key]["attribution"]
         folium_dict[key] = folium.TileLayer(
             tiles=url,
             attr=attribution,
@@ -286,13 +288,13 @@ def xyz_to_folium():
             max_zoom=22,
         )
 
-    for key in wms_tiles:
-        name = wms_tiles[key]["name"]
-        url = wms_tiles[key]["url"]
-        layers = wms_tiles[key]["layers"]
-        fmt = wms_tiles[key]["format"]
-        transparent = wms_tiles[key]["transparent"]
-        attribution = wms_tiles[key]["attribution"]
+    for key in WMS_TILES:
+        name = WMS_TILES[key]["name"]  # type: ignore
+        url = WMS_TILES[key]["url"]  # type: ignore
+        layers = WMS_TILES[key]["layers"]
+        fmt = WMS_TILES[key]["format"]
+        transparent = WMS_TILES[key]["transparent"]
+        attribution = WMS_TILES[key]["attribution"]  # type: ignore
         folium_dict[key] = folium.WmsTileLayer(
             url=url,
             layers=layers,
@@ -309,10 +311,7 @@ def xyz_to_folium():
         name = xyz_dict[item].name
         url = xyz_dict[item].build_url()
         attribution = xyz_dict[item].attribution
-        if "max_zoom" in xyz_dict[item].keys():
-            max_zoom = xyz_dict[item]["max_zoom"]
-        else:
-            max_zoom = 22
+        max_zoom = xyz_dict[item]["max_zoom"] if "max_zoom" in xyz_dict[item] else 22
         folium_dict[name] = folium.TileLayer(
             tiles=url,
             attr=attribution,

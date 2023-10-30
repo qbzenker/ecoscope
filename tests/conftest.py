@@ -1,5 +1,4 @@
 import os
-
 import warnings
 
 import ee
@@ -25,7 +24,7 @@ def pytest_configure(config):
         pytest.earthengine = True
     except ee.EEException:
         pytest.earthengine = False
-        warnings.warn(Warning("Earth Engine can not be initialized. Skipping related tests..."))
+        warnings.warn(Warning("Earth Engine can not be initialized. Skipping related tests..."), stacklevel=1)
 
     pytest.earthranger = ecoscope.io.EarthRangerIO(
         server=os.getenv("ER_SERVER", "https://mep-dev.pamdas.org"),
@@ -33,7 +32,7 @@ def pytest_configure(config):
         password=os.getenv("ER_PASSWORD"),
     ).login()
     if not pytest.earthranger:
-        warnings.warn(Warning("EarthRanger_IO can not be initialized. Skipping related tests..."))
+        warnings.warn(Warning("EarthRanger_IO can not be initialized. Skipping related tests..."), stacklevel=1)
 
 
 @pytest.fixture(scope="session")

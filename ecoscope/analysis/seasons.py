@@ -54,19 +54,17 @@ def val_cuts(vals, num_seasons=2):
         cuts.append(
             np.max(
                 x[
-                    tuple(
-                        [
-                            norm.sf(
-                                x,
-                                loc=mu_vars[tuple([i - 1, 0])],
-                                scale=np.sqrt(mu_vars[tuple([i - 1, 1])]),
-                            )
-                            > norm.cdf(
-                                x,
-                                loc=mu_vars[tuple([i, 0])],
-                                scale=np.sqrt(mu_vars[tuple([i, 1])]),
-                            )
-                        ]
+                    (
+                        norm.sf(
+                            x,
+                            loc=mu_vars[([i - 1, 0])],
+                            scale=np.sqrt(mu_vars[([i - 1, 1])]),
+                        )
+                        > norm.cdf(
+                            x,
+                            loc=mu_vars[([i, 0])],
+                            scale=np.sqrt(mu_vars[([i, 1])]),
+                        )
                     )
                 ]
             )
@@ -77,7 +75,6 @@ def val_cuts(vals, num_seasons=2):
 
 
 def seasonal_windows(ndvi_vals, cuts, season_labels):
-
     enc = LabelEncoder()
     ndvi_vals["season"] = pandas.cut(ndvi_vals["NDVI"], bins=cuts, labels=season_labels)
     ndvi_vals["season_code"] = enc.fit_transform(ndvi_vals["season"])

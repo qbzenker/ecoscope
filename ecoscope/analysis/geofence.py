@@ -10,7 +10,7 @@ import ecoscope
 
 
 class Region(collections.UserDict):
-    def __init__(self, geometry: typing.Any, unique_id: str = None, region_name: str = None):
+    def __init__(self, geometry: typing.Any, unique_id: str | None = None, region_name: str | None = None):
         super().__init__(
             geometry=geometry,
             unique_id=unique_id,
@@ -19,14 +19,14 @@ class Region(collections.UserDict):
 
 
 class GeoFence(collections.UserDict):
-    """Represents Virtual Fence Boundary"""
+    """Represents Virtual Fence Boundary."""
 
     def __init__(
         self,
         geometry: typing.Any,
-        unique_id: str = None,
-        fence_name: str = None,
-        warn_level: str = None,
+        unique_id: str | None = None,
+        fence_name: str | None = None,
+        warn_level: str | None = None,
     ):
         super().__init__(
             geometry=geometry,
@@ -38,8 +38,8 @@ class GeoFence(collections.UserDict):
 
 @dataclasses.dataclass
 class GeoCrossingProfile:
-    geofences: typing.List[GeoFence]
-    regions: typing.List[Region]
+    geofences: list[GeoFence]
+    regions: list[Region]
 
     @property
     def geofence_df(self):
@@ -57,17 +57,16 @@ class GeoFenceCrossing:
         geocrossing_profile: GeoCrossingProfile,
         trajectory: ecoscope.base.Trajectory,
     ):
-        """
-        Analyze the trajectory of each subject in relation to set of virtual fences and regions to determine where/when
-        the polylines were crossed and what the containment of the individual was before and
-        after any geofence crossings.
+        """Analyze the trajectory of each subject in relation to set of virtual fences and regions to determine
+        where/when the polylines were crossed and what the containment of the individual was before and after any
+        geofence crossings.
 
         Parameters
         ----------
         geocrossing_profile: GeoCrossingProfile
             Object that contains the geonfences and regions
         trajectory: ecoscope.base.Trajectory
-            Geodataframe stores goemetry, speed_kmhr, heading etc. for each subject.
+            Geodataframe stores geometry, speed_kmhr, heading etc. for each subject.
 
         Returns
         -------
@@ -112,5 +111,7 @@ class GeoFenceCrossing:
 
         fences = geocrossing_profile.geofence_df
         df = pd.concat([apply_func(fence) for _, fence in fences.iterrows()])
+        # TODO: optimize
+        # df = fences.apply(lambda fence: apply_func(fence))
         df.drop(["start_point", "end_point"], axis=1, inplace=True)
         return ecoscope.base.EcoDataFrame(df, geometry="geometry")

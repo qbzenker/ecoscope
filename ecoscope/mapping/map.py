@@ -1,6 +1,5 @@
 import asyncio
 import base64
-import typing
 import urllib
 import warnings
 
@@ -10,10 +9,10 @@ import geopandas as gpd
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
-from pyppeteer import launch
 import rasterio
 from branca.colormap import StepColormap
 from branca.element import MacroElement, Template
+from pyppeteer import launch
 
 import ecoscope
 from ecoscope.contrib.foliumap import Map
@@ -21,33 +20,7 @@ from ecoscope.contrib.foliumap import Map
 warnings.filterwarnings("ignore", "GeoSeries.isna", UserWarning)
 
 
-class EcoMapMixin:
-    def add_speedmap(
-        self,
-        trajectory: gpd.GeoDataFrame,
-        classification_method: str = "equal_interval",
-        num_classes: int = 6,
-        speed_colors: typing.List = None,
-        bins: typing.List = None,
-        legend: bool = True,
-    ):
-
-        speed_df = ecoscope.analysis.SpeedDataFrame.from_trajectory(
-            trajectory=trajectory,
-            classification_method=classification_method,
-            num_classes=num_classes,
-            speed_colors=speed_colors,
-            bins=bins,
-        )
-        self.add_gdf(speed_df, color=speed_df["speed_colour"])
-
-        if legend:
-            self.add_legend(legend_dict=dict(zip(speed_df.label, speed_df.speed_colour)))
-
-        return speed_df
-
-
-class EcoMap(EcoMapMixin, Map):
+class EcoMap(Map):
     def __init__(self, *args, static=False, print_control=True, **kwargs):
         kwargs["attr"] = kwargs.get("attr", " ")
         kwargs["canvas"] = kwargs.get("canvas", True)
@@ -73,9 +46,7 @@ class EcoMap(EcoMapMixin, Map):
             self.add_print_control()
 
     def add_gdf(self, data, *args, simplify_tolerance=None, **kwargs):
-        """
-        Wrapper for `geopandas.explore._explore`.
-        """
+        """Wrapper for `geopandas.explore._explore`."""
 
         data = data.copy()
         data = data.to_crs(4326)
@@ -94,9 +65,7 @@ class EcoMap(EcoMapMixin, Map):
         gpd.explore._explore(data, *args, **kwargs)
 
     def add_legend(self, *args, **kwargs):
-        """
-        Patched method for allowing legend hex colors to start with a "#".
-        """
+        """Patched method for allowing legend hex colors to start with a "#"."""
         legend_dict = kwargs.get("legend_dict")
         if legend_dict is not None:
             kwargs["legend_dict"] = {
@@ -104,6 +73,29 @@ class EcoMap(EcoMapMixin, Map):
             }
 
         return super().add_legend(*args, **kwargs)
+
+    def add_speedmap(
+        self,
+        trajectory: gpd.GeoDataFrame,
+        classification_method: str = "equal_interval",
+        num_classes: int = 6,
+        speed_colors: list | None = None,
+        bins: list | None = None,
+        legend: bool = True,
+    ):
+        speed_df = ecoscope.analysis.SpeedDataFrame.from_trajectory(
+            trajectory=trajectory,
+            classification_method=classification_method,
+            num_classes=num_classes,
+            speed_colors=speed_colors,
+            bins=bins,
+        )
+        self.add_gdf(speed_df, color=speed_df["speed_colour"])
+
+        if legend:
+            self.add_legend(legend_dict=dict(zip(speed_df.label, speed_df.speed_colour)))
+
+        return speed_df
 
     def add_north_arrow(self, position="topright", scale=1.0):
         """
@@ -203,8 +195,7 @@ class EcoMap(EcoMapMixin, Map):
         loop.run_until_complete(capture_screenshot(html_string, outfile))
 
     def add_ee_layer(self, ee_object, visualization_params, name) -> None:
-        """
-        Method for displaying Earth Engine image tiles.
+        """Method for displaying Earth Engine image tiles.
 
         Parameters
         ----------
@@ -264,6 +255,7 @@ class EcoMap(EcoMapMixin, Map):
         ----------
         bounds : [x1, y1, x2, y2]
             Map extent in WGS 84
+
         """
 
         assert -180 < bounds[0] <= bounds[2] < 180
@@ -283,8 +275,7 @@ class EcoMap(EcoMapMixin, Map):
         self.zoom_to_bounds(gs.geometry.to_crs(4326).total_bounds)
 
     def add_local_geotiff(self, path, zoom=False, cmap=None, colorbar=True):
-        """
-        Displays a local GeoTIFF.
+        """Displays a local GeoTIFF.
 
         Parameters
         ----------
@@ -296,6 +287,7 @@ class EcoMap(EcoMapMixin, Map):
             Matplotlib colormap to apply to raster
         colorbar : bool
             Whether to add colorbar for provided `cmap`. Does nothing if `cmap` is not provided.
+
         """
 
         with rasterio.open(path) as src:
@@ -354,8 +346,7 @@ class EcoMap(EcoMapMixin, Map):
 
 
 class ControlElement(MacroElement):
-    """
-    Class to wrap arbitrary HTML as Leaflet Control.
+    """Class to wrap arbitrary HTML as Leaflet Control.
 
     Parameters
     ----------
@@ -391,8 +382,7 @@ class ControlElement(MacroElement):
 
 
 class FloatElement(MacroElement):
-    """
-    Class to wrap arbitrary HTML as a floating Element.
+    """Class to wrap arbitrary HTML as a floating Element.
 
     Parameters
     ----------
@@ -437,8 +427,7 @@ class FloatElement(MacroElement):
 
 
 class GeoTIFFElement(MacroElement):
-    """
-    Class to display a GeoTIFF.
+    """Class to display a GeoTIFF.
 
     Parameters
     ----------
@@ -446,6 +435,7 @@ class GeoTIFFElement(MacroElement):
         URL of GeoTIFF
     zoom : bool
         Zoom to displayed GeoTIFF
+
     """
 
     _template = Template(

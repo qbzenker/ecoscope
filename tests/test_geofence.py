@@ -1,5 +1,4 @@
 import geopandas as gpd
-import geopandas.testing
 import pandas as pd
 from shapely.geometry import MultiLineString, Polygon
 

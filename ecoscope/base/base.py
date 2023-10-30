@@ -5,8 +5,8 @@ import astropy
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from pyproj import Geod
 import shapely
+from pyproj import Geod
 
 from ecoscope.analysis import astronomy
 from ecoscope.base._dataclasses import (
@@ -20,24 +20,20 @@ from ecoscope.base.utils import cachedproperty
 
 
 class EcoDataFrame(gpd.GeoDataFrame):
-    """
-    `EcoDataFrame` extends `geopandas.GeoDataFrame` to provide customizations and allow for simpler extension.
-    """
+    """`EcoDataFrame` extends `geopandas.GeoDataFrame` to provide customizations and allow for simpler extension."""
 
     @property
     def _constructor(self):
         return type(self)
 
-    def __init__(self, data=None, *args, **kwargs):
-        if kwargs.get("geometry") is None:
+    def __init__(self, data: pd.DataFrame, *args, **kwargs):
+        if kwargs.get("geometry") is None and hasattr(data, "geometry"):
             # Load geometry from data if not specified in kwargs
-            if hasattr(data, "geometry"):
-                kwargs["geometry"] = data.geometry.name
+            kwargs["geometry"] = data.geometry.name
 
-        if kwargs.get("crs") is None:
+        if kwargs.get("crs") is None and hasattr(data, "crs"):
             # Load crs from data if not specified in kwargs
-            if hasattr(data, "crs"):
-                kwargs["crs"] = data.crs
+            kwargs["crs"] = data.crs
 
         super().__init__(data, *args, **kwargs)
 
@@ -87,8 +83,7 @@ class EcoDataFrame(gpd.GeoDataFrame):
     def plot(self, *args, **kwargs):
         if self._geometry_column_name in self:
             return gpd.GeoDataFrame.plot(self, *args, **kwargs)
-        else:
-            return pd.DataFrame(self).plot(*args, **kwargs)
+        return pd.DataFrame(self).plot(*args, **kwargs)
 
     def reset_filter(self, inplace=False):
         if inplace:
@@ -101,24 +96,17 @@ class EcoDataFrame(gpd.GeoDataFrame):
         if not inplace:
             return frame
 
-    def remove_filtered(self, inplace=False):
-        if inplace:
-            frame = self
-        else:
-            frame = self.copy()
-
-        frame.query("~junk_status", inplace=True)
-
-        if not inplace:
-            return frame
+    def remove_filtered(self, inplace=False) -> None | gpd.GeoDataFrame:
+        return self.query("~junk_status", inplace=inplace)
 
 
 class Relocations(EcoDataFrame):
-    """
-    Relocation is a model for a set of fixes from a given subject.
+    """Relocation is a model for a set of fixes from a given subject.
+
     Because fixes are temporal, they can be ordered asc or desc. The additional_data dict can contain info
     specific to the subject and relocations: name, type, region, sex etc. These values are applicable to all
     fixes in the relocations array. If they vary, then they should be put into each fix's additional_data dict.
+
     """
 
     @classmethod
@@ -154,16 +142,17 @@ class Relocations(EcoDataFrame):
         if not pd.api.types.is_datetime64_any_dtype(gdf["fixtime"]):
             warnings.warn(
                 f"{time_col} is not of type datetime64. Attempting to automatically infer format and timezone. "
-                "Results may be incorrect."
+                "Results may be incorrect.",
+                stacklevel=1,
             )
             gdf["fixtime"] = pd.to_datetime(gdf["fixtime"])
 
         if gdf["fixtime"].dt.tz is None:
-            warnings.warn(f"{time_col} is not timezone aware. Assuming datetime are in UTC.")
+            warnings.warn(f"{time_col} is not timezone aware. Assuming datetime are in UTC.", stacklevel=1)
             gdf["fixtime"] = gdf["fixtime"].dt.tz_localize(tz="UTC")
 
         if gdf.crs is None:
-            warnings.warn("CRS was not set. Assuming geometries are in WGS84.")
+            warnings.warn("CRS was not set. Assuming geometries are in WGS84.", stacklevel=1)
             gdf.set_crs(4326, inplace=True)
 
         if uuid_col is not None:
@@ -238,7 +227,7 @@ class Relocations(EcoDataFrame):
         return gdf
 
     def apply_reloc_filter(self, fix_filter=None, inplace=False):
-        """Apply a given filter by marking the fix junk_status based on the conditions of a filter"""
+        """Apply a given filter by marking the fix junk_status based on the conditions of a filter."""
 
         if not self["fixtime"].is_monotonic_increasing:
             self.sort_values("fixtime", inplace=True)
@@ -296,24 +285,20 @@ class Relocations(EcoDataFrame):
 
     @cachedproperty
     def cluster_radius(self):
-        """
-        The cluster radius is the largest distance between a point in the relocationss and the
-        centroid of the relocationss
-        """
+        """The cluster radius is the largest distance between a point in the relocationss and the centroid of the
+        relocationss."""
         distance = self.distance_from_centroid
         return distance.max()
 
     @cachedproperty
     def cluster_std_dev(self):
-        """
-        The cluster standard deviation is the standard deviation of the radii from the centroid
-        to each point making up the cluster
-        """
+        """The cluster standard deviation is the standard deviation of the radii from the centroid to each point making
+        up the cluster."""
         distance = self.distance_from_centroid
         return np.std(distance)
 
     def threshold_point_count(self, threshold_dist):
-        """Counts the number of points in the cluster that are within a threshold distance of the geographic centre"""
+        """Counts the number of points in the cluster that are within a threshold distance of the geographic centre."""
         distance = self.distance_from_centroid
         return distance[distance <= threshold_dist].size
 
@@ -325,25 +310,28 @@ class Relocations(EcoDataFrame):
 
 
 class Trajectory(EcoDataFrame):
-    """
-    A trajectory represents a time-ordered collection of segments.
-    Currently only straight track segments exist.
-    It is based on an underlying relocs object that is the point representation
+    """A trajectory represents a time-ordered collection of segments.
+
+    Currently only straight track segments exist. It is based on an underlying relocs object that is the point
+    representation
+
     """
 
     @classmethod
     def from_relocations(cls, gdf, *args, **kwargs):
-        """
-        Create Trajectory class from Relocation dataframe.
+        """Create Trajectory class from Relocation dataframe.
+
         Parameters
         ----------
         gdf: Geodataframe
             Relocation geodataframe with relevant columns
         args
         kwargs
+
         Returns
         -------
         Trajectory
+
         """
         assert isinstance(gdf, Relocations)
         assert {"groupby_col", "fixtime", "geometry"}.issubset(gdf)
@@ -360,9 +348,7 @@ class Trajectory(EcoDataFrame):
         return cls(gdf, *args, **kwargs)
 
     def get_displacement(self):
-        """
-        Get displacement in meters between first and final fixes.
-        """
+        """Get displacement in meters between first and final fixes."""
 
         if not self["segment_start"].is_monotonic_increasing:
             self = self.sort_values("segment_start")
@@ -373,10 +359,8 @@ class Trajectory(EcoDataFrame):
         return start.distance(end)
 
     def get_tortuosity(self):
-        """
-        Get tortuosity for dataframe defined as distance traveled divided by displacement between first and final
-        points.
-        """
+        """Get tortuosity for dataframe defined as distance traveled divided by displacement between first and final
+        points."""
 
         return self["dist_meters"].sum() / self.get_displacement()
 
@@ -389,6 +373,7 @@ class Trajectory(EcoDataFrame):
             crossings of the target over a 24-hour period, default is 150 which
             yields rise time precisions better than one minute.
             https://github.com/astropy/astroplan/pull/424
+
         Returns
         -------
         pd.Series:
@@ -532,15 +517,17 @@ class Trajectory(EcoDataFrame):
         return angles.rename("turn_angle").reindex(self.index)
 
     def upsample(self, freq):
-        """
-        Interpolate to create upsampled Relocations
+        """Interpolate to create upsampled Relocations.
+
         Parameters
         ----------
         freq : str, pd.Timedelta or pd.DateOffset
             Sampling frequency for new Relocations object
+
         Returns
         -------
         relocs : ecoscope.base.Relocations
+
         """
 
         freq = pd.tseries.frequencies.to_offset(freq)
@@ -573,11 +560,12 @@ class Trajectory(EcoDataFrame):
         return Relocations.from_gdf(self.groupby("groupby_col").apply(f).reset_index(level=0))
 
     def to_relocations(self):
-        """
-        Converts a Trajectory object to a Relocations object.
+        """Converts a Trajectory object to a Relocations object.
+
         Returns
         -------
         ecoscope.base.Relocations
+
         """
 
         def f(traj):
@@ -598,8 +586,8 @@ class Trajectory(EcoDataFrame):
         return Relocations.from_gdf(self.groupby("groupby_col").apply(f).reset_index(drop=True))
 
     def downsample(self, freq, tolerance="0S", interpolation=False):
-        """
-        Function to downsample relocations.
+        """Function to downsample relocations.
+
         Parameters
         ----------
         freq: str, pd.Timedelta or pd.DateOffset
@@ -608,9 +596,11 @@ class Trajectory(EcoDataFrame):
             Tolerance on the downsampling frequency
         interpolation: bool, optional
             If true, interpolates locations on the whole trajectory
+
         Returns
         -------
         ecoscope.base.Relocations
+
         """
 
         if interpolation:

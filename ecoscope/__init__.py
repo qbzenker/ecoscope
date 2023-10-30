@@ -12,8 +12,7 @@ __initialized = False
 
 
 def init(silent=False, pyppeteer=False, force=False):
-    """
-    Initializes the environment with ecoscope-specific customizations.
+    """Initializes the environment with ecoscope-specific customizations.
 
     Parameters
     ----------
@@ -51,9 +50,7 @@ def init(silent=False, pyppeteer=False, force=False):
     import geopandas as gpd
 
     def explore(data, *args, **kwargs):
-        """
-        Monkey-patched `geopandas.explore._explore` to use EcoMap instead.
-        """
+        """Monkey-patched `geopandas.explore._explore` to use EcoMap instead."""
         initialized = "m" in kwargs
         if not initialized:
             kwargs["m"] = mapping.EcoMap()
@@ -77,9 +74,8 @@ def init(silent=False, pyppeteer=False, force=False):
     import sys
 
     if "google.colab" in sys.modules and pyppeteer:
-        from IPython import get_ipython
-
         import nest_asyncio
+        from IPython import get_ipython
 
         nest_asyncio.apply()
 

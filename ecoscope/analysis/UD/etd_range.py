@@ -1,14 +1,13 @@
 import math
 import os
-import typing
 from dataclasses import dataclass
 
 import numba as nb
 import numpy as np
 import scipy
-import sklearn
 from scipy.optimize import minimize
 from scipy.stats import weibull_min
+from sklearn.neighbors import KDTree
 
 from ecoscope.base import Trajectory
 from ecoscope.io import raster
@@ -45,20 +44,19 @@ class WeibullPDF:
         return weibull_min.cdf(x=data, c=shape, loc=location, scale=scale)
 
     @staticmethod
-    def nelder_mead(func, x0, args=(), **kwargs):
+    def nelder_mead(func, x0, *args, **kwargs):
         # minimization of scalar function of one or more variables using the Nelder-Mead algorithm.
         return minimize(fun=func, x0=x0, args=args, method="Nelder-Mead", **kwargs)
 
     @staticmethod
     def expected_func(speed, shape, scale, time, distance):
         # time-density expectation function for two-parameter weibull distribution.
-        _funcs = [
-            4 * shape / (math.pi * scale * speed),
-            math.pow((speed / scale), shape - 1),
-            math.exp(-1 * math.pow(speed / scale, shape))
-            / math.sqrt(np.square(speed) * np.square(time) - np.square(distance)),
-        ]
-        return math.prod(_funcs)
+        return np.prod(
+            4 * shape / (np.pi * scale * speed),
+            np.power((speed / scale), shape - 1),
+            np.exp(-1 * np.power(speed / scale, shape))
+            / np.sqrt(np.square(speed) * np.square(time) - np.square(distance)),
+        )
 
 
 @dataclass
@@ -78,36 +76,35 @@ class Weibull3Parameter(WeibullPDF):
 
 def calculate_etd_range(
     trajectory_gdf: Trajectory,
-    output_path: typing.Union[str, bytes, os.PathLike],
+    output_path: str | bytes | os.PathLike,
+    raster_profile: raster.RasterProfile,
     max_speed_kmhr: float = 0.0,
     max_speed_percentage: float = 0.9999,
-    raster_profile: raster.RasterProfile = None,
     expansion_factor: float = 1.3,
-    weibull_pdf: typing.Union[Weibull2Parameter, Weibull3Parameter] = Weibull2Parameter(),
+    weibull_pdf: Weibull2Parameter | Weibull3Parameter | None = None,
 ) -> None:
-    """
-    The ETDRange class provides a trajectory-based, nonparametric approach to estimate the utilization distribution (UD)
-    of an animal, using model parameters derived directly from the movement behaviour of the species.
-    The model builds on the theory of "time-geography" whereby elliptical constrain- ing regions are established
-    between temporally adjacent recorded locations.
+    """The ETDRange class provides a trajectory-based, nonparametric approach to estimate the utilization distribution
+    (UD) of an animal, using model parameters derived directly from the movement behaviour of the species. The model
+    builds on the theory of "time-geography" whereby elliptical constrain- ing regions are established between
+    temporally adjacent recorded locations.
 
-    Parameters
-    ----------
-    trajectory_gdf : geopandas.GeoDataFrame
-    output_path : str or PathLike
-    max_speed_kmhr : float
-    max_speed_percentage : 0.999
-    raster_profile : raster.RasterProfile
-    expansion_factor : float
-    weibull_pdf : Weibull2Parameter or Weibull3Parameter
+    Args:
+        trajectory_gdf (Trajectory): _description_
+        output_path (str | bytes | os.PathLike): _description_
+        raster_profile (raster.RasterProfile): _description_
+        max_speed_kmhr (float, optional): _description_. Defaults to 0.0.
+        max_speed_percentage (float, optional): _description_. Defaults to 0.9999.
+        expansion_factor (float, optional): _description_. Defaults to 1.3.
+        weibull_pdf (Weibull2Parameter | Weibull3Parameter | None, optional): _description_. Defaults to None.
 
-    Returns
-    -------
-    output_path : str
+    Raises:
+        ValueError: if ETD maximum speed value is less than or equal to trajectory maximum speed value
+
     """
+    weibull_pdf = weibull_pdf or Weibull2Parameter()
 
     # if two-parameter weibull has default values; run an optimization routine to auto-determine parameters
-    if isinstance(weibull_pdf, Weibull2Parameter) and all([weibull_pdf.shape == 1.0, weibull_pdf.scale == 1.0]):
+    if isinstance(weibull_pdf, Weibull2Parameter) and weibull_pdf.shape == 1.0 and weibull_pdf.scale == 1.0:
         speed_kmhr = trajectory_gdf.speed_kmhr
         shape, scale = weibull_pdf.fit(speed_kmhr)
 
@@ -147,7 +144,7 @@ def calculate_etd_range(
         maxspeed = max_speed_kmhr
     else:
         # Use a value calculated from the CDF
-        maxspeed = weibull_pdf.scale * math.pow(
+        maxspeed = weibull_pdf.scale * math.pow(  # type: ignore
             -1 * math.log(1.0 - max_speed_percentage),
             1.0 / weibull_pdf.shape,
         )
@@ -164,7 +161,7 @@ def calculate_etd_range(
 
     centroids_coords = np.dot(grid_centroids, np.mgrid[1:2, :num_columns, :num_rows].T.reshape(-1, 3, 1))
 
-    tr = sklearn.neighbors.KDTree(centroids_coords.squeeze().T)
+    tr = KDTree(centroids_coords.squeeze().T)
 
     del centroids_coords
 
@@ -179,7 +176,7 @@ def calculate_etd_range(
     del tr, points, r
 
     shape = weibull_pdf.shape
-    scale = weibull_pdf.scale
+    scale = weibull_pdf.scale  # type: ignore
 
     x = np.arange(0.001, maxspeed, 0.001)
     y = (4 * shape * scale ** (-shape) / np.pi) * np.array(
@@ -188,6 +185,7 @@ def calculate_etd_range(
 
     raster_ndarray = np.zeros(num_rows * num_columns, dtype=np.float64)
 
+    # TODO: vectorize this loop
     for k in range(len(start[0])):
         a, b, c = np.intersect1d(start[0][k], end[0][k], return_indices=True)
         speeds = (start[1][k][b] + end[1][k][c]) * 0.001 / time[k]
@@ -204,8 +202,8 @@ def calculate_etd_range(
     raster_ndarray[raster_ndarray == 0] = raster_profile.nodata_value
 
     # write raster_ndarray to GeoTIFF file.
-    raster.RasterPy.write(
+    raster.RasterPy.write(  # type: ignore
         ndarray=raster_ndarray.reshape(num_rows, num_columns),
         fp=output_path,
-        **raster_profile,
+        **raster_profile,  # type: ignore
     )

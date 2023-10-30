@@ -8,7 +8,7 @@ version_data = dict(re.findall(r'__([a-z]+)__\s*=\s*"([^"]+)"', version_file))
 
 try:
     descr = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
-except IOError:
+except OSError:
     descr = ""
 
 dependencies = [
@@ -77,6 +77,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     include_package_data=True,
 )

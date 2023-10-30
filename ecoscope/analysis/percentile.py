@@ -1,5 +1,4 @@
 import os
-import typing
 from dataclasses import dataclass, field
 
 import geopandas as gpd
@@ -12,8 +11,8 @@ from shapely.geometry.multipolygon import MultiPolygon
 
 @dataclass
 class PercentileAreaProfile:
-    input_raster: typing.Union[str, bytes, os.PathLike]
-    percentile_levels: typing.List = field(default_factory=[50.0])
+    input_raster: str | bytes | os.PathLike
+    percentile_levels: list[float] = field(default=[50.0])
     subject_id: str = ""
 
 
@@ -75,8 +74,8 @@ class PercentileArea:
 
 
 def get_percentile_area(
-    percentile_levels: typing.List,
-    raster_path: typing.Union[str, bytes, os.PathLike],
+    percentile_levels: list,
+    raster_path: str | bytes | os.PathLike,
     subject_id: str = "",
 ):
     """

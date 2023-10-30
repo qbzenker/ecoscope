@@ -1,6 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import pytz
 from shapely.geometry import box
 
 
@@ -38,6 +39,7 @@ def create_meshgrid(
     -------
     gs : geopandas.GeoSeries
         Grid of boxes. CRS is converted to `out_crs`.
+
     """
 
     a = gpd.array.from_shapely([aoi], crs=in_crs)
@@ -74,10 +76,10 @@ def create_meshgrid(
 
 
 class cachedproperty:  # noqa
-    """
-    The ``cachedproperty`` is used similar to :class:`property`, except
-    that the wrapped method is only called once. This is commonly used
-    to implement lazy attributes.
+    """The ``cachedproperty`` is used similar to :class:`property`, except that the wrapped method is only called once.
+
+    This is commonly used to implement lazy attributes.
+
     """
 
     def __init__(self, func):
@@ -172,14 +174,14 @@ def create_interval_index(start, intervals, freq, overlap=pd.Timedelta(0), close
 
 
 class ModisBegin(pd._libs.tslibs.offsets.SingleConstructorOffset):
-    """
-    Primitive DateOffset to support MODIS period start times.
-    """
+    """Primitive DateOffset to support MODIS period start times."""
 
     def apply(self, other: pd.Timestamp) -> pd.Timestamp:
+        # TODO: Take a look at this to see if it can be simplified and made more performant
         assert other.tz is not None, "Timestamp must be timezone-aware"
-        other = other.astimezone("UTC").round("d")
-        for i in range(self.n):
+
+        other = other.astimezone(pytz.UTC).round("d")
+        for _ in range(self.n):
             other = min(other + pd.offsets.YearBegin(), other + pd.DateOffset(days=(16 - (other.dayofyear - 1) % 16)))
         return other
 

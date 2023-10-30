@@ -1,10 +1,10 @@
 import datetime
-import pytz
 import json
-import typing
+from typing import Any
 
 import geopandas as gpd
 import pandas as pd
+import pytz
 import requests
 from erclient.client import ERClient, ERClientException, ERClientNotFound
 from tqdm.auto import tqdm
@@ -30,8 +30,8 @@ class EarthRangerIO(ERClient):
         super().__init__(**kwargs)
         try:
             self.login()
-        except ERClientNotFound:
-            raise ERClientNotFound("Failed login. Check Stack Trace for specific reason.")
+        except ERClientNotFound as e:
+            raise ERClientNotFound("Failed login. Check Stack Trace for specific reason.") from e
 
     def _token_request(self, payload):
         response = requests.post(self.token_url, data=payload)
@@ -46,7 +46,9 @@ class EarthRangerIO(ERClient):
         raise ERClientNotFound(json.loads(response.text)["error_description"])
 
     @staticmethod
-    def _clean_kwargs(addl_kwargs={}, **kwargs):
+    def _clean_kwargs(addl_kwargs: dict | None, **kwargs):
+        if addl_kwargs is None:
+            addl_kwargs = {}
         for k in addl_kwargs.keys():
             print(f"Warning: {k} is a non-standard parameter. Results may be unexpected.")
         return {k: v for k, v in {**addl_kwargs, **kwargs}.items() if v is not None}
@@ -175,8 +177,8 @@ class EarthRangerIO(ERClient):
                         "flat": True,
                     },
                 )[0]["id"]
-            except IndexError:
-                raise KeyError("`group_name` not found")
+            except IndexError as e:
+                raise KeyError("`group_name` not found") from e
 
         df = pd.DataFrame(
             self.get_objects_multithreaded(
@@ -219,9 +221,9 @@ class EarthRangerIO(ERClient):
         created_after=None,
         **addl_kwargs,
     ):
-        """
-        Return observations matching queries. If `subject_id`, `source_id`, or `subjectsource_id` is specified, the
+        """Return observations matching queries. If `subject_id`, `source_id`, or `subjectsource_id` is specified, the
         index is set to the provided value.
+
         Parameters
         ----------
         subject_ids: filter to a single subject
@@ -243,6 +245,7 @@ class EarthRangerIO(ERClient):
         Returns
         -------
         observations : gpd.GeoDataFrame
+
         """
         assert (source_ids, subject_ids, subjectsource_ids).count(None) == 2
 
@@ -296,8 +299,8 @@ class EarthRangerIO(ERClient):
         return EarthRangerIO._to_gdf(observations)
 
     def get_source_observations(self, source_ids, include_source_details=False, relocations=True, **kwargs):
-        """
-        Get observations for each listed source and create a `Relocations` object.
+        """Get observations for each listed source and create a `Relocations` object.
+
         Parameters
         ----------
         source_ids : str or list[str]
@@ -311,6 +314,7 @@ class EarthRangerIO(ERClient):
         -------
         relocations : ecoscope.base.Relocations
             Observations in `Relocations` format
+
         """
 
         if isinstance(source_ids, str):
@@ -346,8 +350,8 @@ class EarthRangerIO(ERClient):
         relocations=True,
         **kwargs,
     ):
-        """
-        Get observations for each listed subject and create a `Relocations` object.
+        """Get observations for each listed subject and create a `Relocations` object.
+
         Parameters
         ----------
         subject_ids : str or list[str]
@@ -365,6 +369,7 @@ class EarthRangerIO(ERClient):
         -------
         relocations : ecoscope.base.Relocations
             Observations in `Relocations` format
+
         """
 
         if isinstance(subject_ids, str):
@@ -414,8 +419,8 @@ class EarthRangerIO(ERClient):
         relocations=True,
         **kwargs,
     ):
-        """
-        Get observations for each listed subjectsource and create a `Relocations` object.
+        """Get observations for each listed subjectsource and create a `Relocations` object.
+
         Parameters
         ----------
         subjectsource_ids : str or list[str]
@@ -429,6 +434,7 @@ class EarthRangerIO(ERClient):
         -------
         relocations : ecoscope.base.Relocations
             Observations in `Relocations` format
+
         """
 
         if isinstance(subjectsource_ids, str):
@@ -653,8 +659,7 @@ class EarthRangerIO(ERClient):
         return df
 
     def get_patrol_segments_from_patrol_id(self, patrol_id, **addl_kwargs):
-        """
-        Download patrols for a given `patrol id`.
+        """Download patrols for a given `patrol id`.
 
         Parameters
         ----------
@@ -666,6 +671,7 @@ class EarthRangerIO(ERClient):
         Returns
         -------
         dataframe : Dataframe of patrols.
+
         """
 
         params = self._clean_kwargs(addl_kwargs)
@@ -675,7 +681,7 @@ class EarthRangerIO(ERClient):
         df["patrol_segments"][0].pop("updates")
         df.pop("updates")
 
-        return pd.DataFrame(dict([(k, pd.Series(v)) for k, v in df.items()]))
+        return pd.DataFrame({k: pd.Series(v) for k, v in df.items()})
 
     def get_patrol_segments(self):
         object = "activity/patrols/segments/"
@@ -684,8 +690,8 @@ class EarthRangerIO(ERClient):
         )
 
     def get_patrol_observations(self, patrols_df, include_patrol_details=False, **kwargs):
-        """
-        Download observations for provided `patrols_df`.
+        """Download observations for provided `patrols_df`.
+
         Parameters
         ----------
         patrols_df : pd.DataFrame
@@ -697,6 +703,7 @@ class EarthRangerIO(ERClient):
         Returns
         -------
         relocations : ecoscope.base.Relocations
+
         """
 
         observations = []
@@ -786,7 +793,7 @@ class EarthRangerIO(ERClient):
         manufacturer_id: str,
         model_name: str,
         provider: str = "default",
-        additional: typing.Dict = {},
+        additional: dict = {},
         **kwargs,
     ) -> pd.DataFrame:
         """
@@ -854,7 +861,7 @@ class EarthRangerIO(ERClient):
         source_id: str,
         lower_bound_assigned_range: datetime.datetime,
         upper_bound_assigned_range: datetime.datetime,
-        additional: typing.Dict = None,
+        additional: dict | None = None,
     ) -> pd.DataFrame:
         """
         Parameters
@@ -925,7 +932,7 @@ class EarthRangerIO(ERClient):
 
     def post_event(
         self,
-        events: typing.Union[gpd.GeoDataFrame, pd.DataFrame, typing.Dict, typing.List[typing.Dict]],
+        events: gpd.GeoDataFrame | pd.DataFrame | dict | list[dict],
     ) -> pd.DataFrame:
         """
         Parameters
@@ -964,14 +971,14 @@ class EarthRangerIO(ERClient):
         self,
         patrol_id: str,
         patrol_segment_id: str,
-        patrol_type: str = None,
-        tracked_subject_id: str = None,
-        scheduled_start: str = None,
-        scheduled_end: str = None,
-        start_time: str = None,
-        end_time: str = None,
-        start_location: typing.Tuple[float, float] = None,
-        end_location: typing.Tuple[float, float] = None,
+        patrol_type: str | None = None,
+        tracked_subject_id: str | None = None,
+        scheduled_start: str | None = None,
+        scheduled_end: str | None = None,
+        start_time: str | None = None,
+        end_time: str | None = None,
+        start_location: tuple[float, float] | None = None,
+        end_location: tuple[float, float] | None = None,
         **kwargs,
     ) -> pd.DataFrame:
         """
@@ -993,7 +1000,7 @@ class EarthRangerIO(ERClient):
         pd.DataFrame
         """
 
-        payload = {
+        payload: dict[str, Any] = {
             "patrol": patrol_id,
             "patrol_segment": patrol_segment_id,
             "scheduled_start": scheduled_start,
@@ -1060,7 +1067,7 @@ class EarthRangerIO(ERClient):
     def patch_event(
         self,
         event_id: str,
-        events: typing.Union[gpd.GeoDataFrame, pd.DataFrame, typing.Dict, typing.List[typing.Dict]],
+        events: gpd.GeoDataFrame | pd.DataFrame | dict | list[dict],
     ) -> pd.DataFrame:
         """
         Parameters
