@@ -2474,7 +2474,7 @@ class Map(folium.Map):
         display_options={},
         name="Velocity",
     ):
-        print(f"The folium plotting backend does not support this function.")
+        print("The folium plotting backend does not support this function.")
 
 
 class SplitControl(Layer):

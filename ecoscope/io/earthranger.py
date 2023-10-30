@@ -29,8 +29,8 @@ class EarthRangerIO(ERClient):
         super().__init__(**kwargs)
         try:
             self.login()
-        except ERClientNotFound:
-            raise ERClientNotFound("Failed login. Check Stack Trace for specific reason.")
+        except ERClientNotFound as e:
+            raise ERClientNotFound("Failed login. Check Stack Trace for specific reason.") from e
 
     def _token_request(self, payload):
         response = requests.post(self.token_url, data=payload)
@@ -45,7 +45,9 @@ class EarthRangerIO(ERClient):
         raise ERClientNotFound(json.loads(response.text)["error_description"])
 
     @staticmethod
-    def _clean_kwargs(addl_kwargs={}, **kwargs):
+    def _clean_kwargs(addl_kwargs: dict | None, **kwargs):
+        if addl_kwargs is None:
+            addl_kwargs = {}
         for k in addl_kwargs.keys():
             print(f"Warning: {k} is a non-standard parameter. Results may be unexpected.")
         return {k: v for k, v in {**addl_kwargs, **kwargs}.items() if v is not None}
@@ -174,8 +176,8 @@ class EarthRangerIO(ERClient):
                         "flat": True,
                     },
                 )[0]["id"]
-            except IndexError:
-                raise KeyError("`group_name` not found")
+            except IndexError as e:
+                raise KeyError("`group_name` not found") from e
 
         df = pd.DataFrame(
             self.get_objects_multithreaded(

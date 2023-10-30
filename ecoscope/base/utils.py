@@ -174,9 +174,10 @@ class ModisBegin(pd._libs.tslibs.offsets.SingleConstructorOffset):
     """Primitive DateOffset to support MODIS period start times."""
 
     def apply(self, other: pd.Timestamp) -> pd.Timestamp:
+        # TODO: Take a look at this to see if it can be simplified and made more performant
         assert other.tz is not None, "Timestamp must be timezone-aware"
         other = other.astimezone("UTC").round("d")
-        for i in range(self.n):
+        for _ in range(self.n):
             other = min(other + pd.offsets.YearBegin(), other + pd.DateOffset(days=(16 - (other.dayofyear - 1) % 16)))
         return other
 

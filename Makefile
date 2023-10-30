@@ -47,4 +47,4 @@ install:
 
 tests:
 	# running unit tests...
-	ENV="development" TEST_MODE=1 poetry run pytest -v test/
+	pytest -v -r s --color=yes --cov=ecoscope --cov-append --cov-report=xml

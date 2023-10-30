@@ -47,7 +47,7 @@ def _speedmap_labels(bins):
     return [f"{bins[i]:.1f} - {bins[i + 1]:.1f} km/hr" for i in range(len(bins) - 1)]
 
 
-def apply_classification(x, k, cls_method="natural_breaks", multiples=[-2, -1, 1, 2]):
+def apply_classification(x, k, cls_method="natural_breaks", multiples: list | None = None):
     """Function to select which classifier to apply to the speed distributed data.
 
     Parameters
@@ -61,6 +61,7 @@ def apply_classification(x, k, cls_method="natural_breaks", multiples=[-2, -1, 1
     multiples : Listlike
         The multiples of the standard deviation to add/subtract from the sample mean to define the bins. defaults=
     """
+    multiples = multiples or [-2, -1, 1, 2]
 
     classifier = classification_methods.get(cls_method)
     if not classifier:

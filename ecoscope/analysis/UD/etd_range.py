@@ -5,9 +5,9 @@ from dataclasses import dataclass
 import numba as nb
 import numpy as np
 import scipy
-import sklearn
 from scipy.optimize import minimize
 from scipy.stats import weibull_min
+from sklearn.neighbors import KDTree
 
 from ecoscope.base import Trajectory
 from ecoscope.io import raster
@@ -44,20 +44,19 @@ class WeibullPDF:
         return weibull_min.cdf(x=data, c=shape, loc=location, scale=scale)
 
     @staticmethod
-    def nelder_mead(func, x0, args=(), **kwargs):
+    def nelder_mead(func, x0, *args, **kwargs):
         # minimization of scalar function of one or more variables using the Nelder-Mead algorithm.
         return minimize(fun=func, x0=x0, args=args, method="Nelder-Mead", **kwargs)
 
     @staticmethod
     def expected_func(speed, shape, scale, time, distance):
         # time-density expectation function for two-parameter weibull distribution.
-        _funcs = [
-            4 * shape / (math.pi * scale * speed),
-            math.pow((speed / scale), shape - 1),
-            math.exp(-1 * math.pow(speed / scale, shape))
-            / math.sqrt(np.square(speed) * np.square(time) - np.square(distance)),
-        ]
-        return math.prod(_funcs)
+        return np.prod(
+            4 * shape / (np.pi * scale * speed),
+            np.power((speed / scale), shape - 1),
+            np.exp(-1 * np.power(speed / scale, shape))
+            / np.sqrt(np.square(speed) * np.square(time) - np.square(distance)),
+        )
 
 
 @dataclass
@@ -162,7 +161,7 @@ def calculate_etd_range(
 
     centroids_coords = np.dot(grid_centroids, np.mgrid[1:2, :num_columns, :num_rows].T.reshape(-1, 3, 1))
 
-    tr = sklearn.neighbors.KDTree(centroids_coords.squeeze().T)
+    tr = KDTree(centroids_coords.squeeze().T)
 
     del centroids_coords
 
@@ -186,6 +185,7 @@ def calculate_etd_range(
 
     raster_ndarray = np.zeros(num_rows * num_columns, dtype=np.float64)
 
+    # TODO: vectorize this loop
     for k in range(len(start[0])):
         a, b, c = np.intersect1d(start[0][k], end[0][k], return_indices=True)
         speeds = (start[1][k][b] + end[1][k][c]) * 0.001 / time[k]

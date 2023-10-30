@@ -1,7 +1,6 @@
 import os
 
 import geopandas as gpd
-import geopandas.testing
 import numpy as np
 import pandas as pd
 import pytest

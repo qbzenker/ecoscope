@@ -38,7 +38,7 @@ def ecoplot(
     layout_kwargs=None,
     **make_subplots_kwargs,
 ):
-    groups = sorted(list(set.union(*[set(datum.grouped.groups.keys()) for datum in data])))
+    groups = sorted(set.union(*[set(datum.grouped.groups.keys()) for datum in data]))
     datum_1 = data[0]
     datum_2 = None
     for datum in data[1:]:
@@ -51,17 +51,15 @@ def ecoplot(
 
     fig = make_subplots(
         **{
-            **dict(
-                rows=n,
-                cols=1,
-                shared_xaxes="all",
-                vertical_spacing=vertical_spacing,
-                x_title=data[0].x_col,
-                y_title=data[0].y_col,
-                row_heights=list(np.repeat(subplot_height, n)),
-                column_widths=[subplot_width],
-                specs=[[{"secondary_y": datum_2 is not None}]] * len(groups),
-            ),
+            "rows": n,
+            "cols": 1,
+            "shared_xaxes": "all",
+            "vertical_spacing": vertical_spacing,
+            "x_title": data[0].x_col,
+            "y_title": data[0].y_col,
+            "row_heights": list(np.repeat(subplot_height, n)),
+            "column_widths": [subplot_width],
+            "specs": [[{"secondary_y": datum_2 is not None}]] * len(groups),
             **make_subplots_kwargs,
         }
     )
@@ -121,7 +119,7 @@ def ecoplot(
         height=fig_height,
     )
 
-    fig.update_layout(**{**dict(showlegend=False, autosize=False), **(layout_kwargs or {})})
+    fig.update_layout(**{"showlegend": False, "autosize": False, **(layout_kwargs or {})})
 
     if annotate_name_pos is not None:
         for i, name in enumerate(groups, 1):
@@ -383,7 +381,7 @@ def plot_collar_voltage(
                 marker={
                     "colorscale": "Viridis",
                     "color": voltage,
-                    "colorbar": dict(title="Colorbar"),
+                    "colorbar": {"title": "Colorbar"},
                     "cmax": np.max(voltage),
                     "cmin": np.min(voltage),
                 },
@@ -428,7 +426,7 @@ def plot_collar_voltage(
                     )
                 else:
                     fig.add_hline(**hline_kwargs)
-            fig.update_layout(yaxis=dict(range=[lower_y, upper_y]))
+            fig.update_layout(yaxis={"range": [lower_y, upper_y]})
             if output_folder:
                 fig.write_image(os.path.join(f"{output_folder}/_{group}_{str(uuid.uuid4())[:4]}.png"))
             else:

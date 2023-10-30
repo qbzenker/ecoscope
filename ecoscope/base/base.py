@@ -9,13 +9,9 @@ import shapely
 from pyproj import Geod
 
 from ecoscope.analysis import astronomy
-from ecoscope.base._dataclasses import (
-    RelocsCoordinateFilter,
-    RelocsDateRangeFilter,
-    RelocsDistFilter,
-    RelocsSpeedFilter,
-    TrajSegFilter,
-)
+from ecoscope.base._dataclasses import (RelocsCoordinateFilter,
+                                        RelocsDateRangeFilter,
+                                        RelocsDistFilter, TrajSegFilter)
 from ecoscope.base.utils import cachedproperty
 
 
@@ -26,16 +22,14 @@ class EcoDataFrame(gpd.GeoDataFrame):
     def _constructor(self):
         return type(self)
 
-    def __init__(self, data=None, *args, **kwargs):
-        if kwargs.get("geometry") is None:
+    def __init__(self, data: pd.DataFrame, *args, **kwargs):
+        if kwargs.get("geometry") is None and hasattr(data, "geometry"):
             # Load geometry from data if not specified in kwargs
-            if hasattr(data, "geometry"):
-                kwargs["geometry"] = data.geometry.name
+            kwargs["geometry"] = data.geometry.name
 
-        if kwargs.get("crs") is None:
+        if kwargs.get("crs") is None and hasattr(data, "crs"):
             # Load crs from data if not specified in kwargs
-            if hasattr(data, "crs"):
-                kwargs["crs"] = data.crs
+            kwargs["crs"] = data.crs
 
         super().__init__(data, *args, **kwargs)
 
@@ -85,8 +79,7 @@ class EcoDataFrame(gpd.GeoDataFrame):
     def plot(self, *args, **kwargs):
         if self._geometry_column_name in self:
             return gpd.GeoDataFrame.plot(self, *args, **kwargs)
-        else:
-            return pd.DataFrame(self).plot(*args, **kwargs)
+        return pd.DataFrame(self).plot(*args, **kwargs)
 
     def reset_filter(self, inplace=False):
         if inplace:
@@ -99,16 +92,8 @@ class EcoDataFrame(gpd.GeoDataFrame):
         if not inplace:
             return frame
 
-    def remove_filtered(self, inplace=False):
-        if inplace:
-            frame = self
-        else:
-            frame = self.copy()
-
-        frame.query("~junk_status", inplace=True)
-
-        if not inplace:
-            return frame
+    def remove_filtered(self, inplace=False) -> None | gpd.GeoDataFrame:
+        return self.query("~junk_status", inplace=inplace)
 
 
 class Relocations(EcoDataFrame):
@@ -152,16 +137,17 @@ class Relocations(EcoDataFrame):
         if not pd.api.types.is_datetime64_any_dtype(gdf["fixtime"]):
             warnings.warn(
                 f"{time_col} is not of type datetime64. Attempting to automatically infer format and timezone. "
-                "Results may be incorrect."
+                "Results may be incorrect.",
+                stacklevel=1,
             )
             gdf["fixtime"] = pd.to_datetime(gdf["fixtime"])
 
         if gdf["fixtime"].dt.tz is None:
-            warnings.warn(f"{time_col} is not timezone aware. Assuming datetime are in UTC.")
+            warnings.warn(f"{time_col} is not timezone aware. Assuming datetime are in UTC.", stacklevel=1)
             gdf["fixtime"] = gdf["fixtime"].dt.tz_localize(tz="UTC")
 
         if gdf.crs is None:
-            warnings.warn("CRS was not set. Assuming geometries are in WGS84.")
+            warnings.warn("CRS was not set. Assuming geometries are in WGS84.", stacklevel=1)
             gdf.set_crs(4326, inplace=True)
 
         if uuid_col is not None:

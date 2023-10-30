@@ -57,13 +57,13 @@ def val_cuts(vals, num_seasons=2):
                     (
                         norm.sf(
                             x,
-                            loc=mu_vars[tuple([i - 1, 0])],
-                            scale=np.sqrt(mu_vars[tuple([i - 1, 1])]),
+                            loc=mu_vars[([i - 1, 0])],
+                            scale=np.sqrt(mu_vars[([i - 1, 1])]),
                         )
                         > norm.cdf(
                             x,
-                            loc=mu_vars[tuple([i, 0])],
-                            scale=np.sqrt(mu_vars[tuple([i, 1])]),
+                            loc=mu_vars[([i, 0])],
+                            scale=np.sqrt(mu_vars[([i, 1])]),
                         )
                     )
                 ]
